@@ -2,7 +2,12 @@
 title: 스프링 공식 예제 프로젝트 PetClinic
 date: 2019-12-04
 categories: Back-end
-tags: Spring PetClinic Thymeleaf Jar War
+tags: 
+- Spring 
+- PetClinic 
+- Thymeleaf 
+- Jar 
+- War
 comments : true
 ---
 
