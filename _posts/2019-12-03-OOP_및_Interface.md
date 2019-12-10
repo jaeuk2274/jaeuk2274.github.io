@@ -2,7 +2,7 @@
 layout: post
 title: "OOP 및 Interface"
 subtitle: "OOP 및 Interface"
-categories: devlop
+categories: Back-end
 tags: Java
 comments: true
 ---
