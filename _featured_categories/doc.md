@@ -4,7 +4,7 @@ title: Documents
 slug: doc
 menu: true
 submenu: true
-order: 7
+order: 3
 description: >
-  어플리케이션의 문서나 업데이트등이 담깁니다.
+  공식 문서들을 보며 번역 및 공부한 내용들을 정리해 나갈 예정입니다.
 ---
