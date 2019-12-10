@@ -1,8 +1,8 @@
 ---
 layout: tag-blog
 title: JPA
-slug: jpa
-category: back-end
+slug: JPA
+category: Back-end
 menu: false
 order: 3
 ---
