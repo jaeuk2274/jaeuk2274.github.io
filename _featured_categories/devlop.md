@@ -1,7 +1,7 @@
 ---
 layout: list
-title: Devlog
-slug: devlog
+title: Devlop
+slug: devlop
 menu: true
 submenu: true
 order: 8
