@@ -1,0 +1,10 @@
+---
+layout: list
+title: Algorithm
+slug: algorithm
+menu: true
+submenu: false
+order: 6
+description: >
+  알고리즘 문제 풀이 내용을 정리할 예정입니다.
+---
