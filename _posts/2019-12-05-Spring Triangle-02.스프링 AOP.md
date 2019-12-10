@@ -14,7 +14,7 @@ comments : true
 AOP(Aspect-oriented programming) 관점 지향 프로그래밍이란?        
 먼저 코드로 살펴보자.
 
-~~~ java
+```java
 class A {
    method a () {
            AAAA -> AAA
@@ -36,7 +36,7 @@ class B {
           BBBB -> BB
   }
 }
-~~~
+```
 
 메소드 a,b,c 전부에 실질적인 로직 앞 뒤로           
 AAAA -> AAA (앞)          
@@ -51,7 +51,7 @@ AAAA -> ABC 가 되어버린다면 해당 3개의 메소드를 전부 찾아가�
 
 
 그럼 다음 코드를 보자.                  
-~~~ java
+``` java
 class A {
    method a () {
            오늘은 7월 4일 미국 독립 기념일이래요.
@@ -75,7 +75,7 @@ class AAAABBBB {
          BBBB -> BB
     }
 }
-~~~
+```
 
 이게 관점 지향 프로그래밍이다.         
 공통적으로 활용되는 코드들을 분리한 것을 볼 수 있다.     
@@ -118,7 +118,7 @@ AOP 구현 방법에도 여러 가지가 존재하는데,
 
 먼저 코드로 프록시 패턴을 설명하자면        
 Store
-~~~ java
+``` java
 public class Store {
 
     Payment payment;
@@ -131,23 +131,23 @@ public class Store {
         payment.pay(amount);
     }
 }
-~~~
-~~~ java
+```
+``` java
 public interface Payment {
 
     void pay(int amount);
 }
-~~~
+```
 
-~~~ java
+``` java
 public class Cash implements Payment {
     @Override
     public void pay(int amount){
         System.out.println(amount + "현금 결제");
     }
 }
-~~~
-~~~ java
+```
+``` java
 public class CashPerf implements Payment{
 
     Payment cash = new Cash();
@@ -163,8 +163,8 @@ public class CashPerf implements Payment{
         System.out.println(stopWatch.prettyPrint());
     }
 }
-~~~
-~~~ java
+```
+``` java
 public class StoreTest {
 
     @Test
@@ -175,15 +175,15 @@ public class StoreTest {
         store.buySomething(100);
     }
 }
-~~~
-~~~
+```
+```
 100현금 결제
 StopWatch '': running time = 109019 ns
 ---------------------------------------------
 ns         %     Task name
 ---------------------------------------------
 000109019  100%  
-~~~
+```
 
 
 기존 코드의 변경 없이 성능 측정 기능 추가
@@ -216,13 +216,13 @@ Cash 대신에 CashPerf(프록시)가 빈으로 등록되고,
 ###  @Transctional
 트랜잭션 어노테이션도 스프링 AOP 기반으로 만들어진 것이며, 스프링 AOP가 사용하는 어노테이션이다.             
 
-~~~
+```
 public interface OwnerRepository extends Repository<Owner, Integer> {
 
     @Query("SELECT DISTINCT owner FROM Owner owner left join fetch owner.pets WHERE owner.lastName LIKE :lastName%")
     @Transactional(readOnly = true)
     Collection<Owner> findByLastName(@Param("lastName") String lastName);
-~~~  
+```  
 
 트랜잭션 어노테이션이 붙어있으면      
 ex. @Transactional(readOnly = true)     
@@ -237,7 +237,7 @@ ex. 코드가 앞뒤로 붙는다.(오토커밋 false, sql 실행 후 롤백 롤
  
 ## 스프링 AOP 구현
 
-~~~
+```
 @GetMapping("/owners/{ownerId}/edit")
 @LogExecutionTime
 public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
@@ -245,16 +245,16 @@ public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model mo
 	model.addAttribute(owner);
 	return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 }
-~~~
+```
 
-~~~
+```
 @Target(ElementType.METHOD) // 이 어노테이션을 어디에 사용할건지
 @Retention(RetentionPolicy.RUNTIME) // 이 어노테이션 정보를 언제까지 유지할건지
 public @interface LogExecutionTime {
 }
-~~~
+```
 
-~~~
+```
 @Component
 @Aspect
 public class LogAspect {
@@ -273,7 +273,7 @@ public class LogAspect {
         return proceed;
     }
 }
-~~~
+```
 
 ----
 @LogExecutionTime 어노테이션을 (어디에 사용할지, 언제까지 유지할건지 등) 만들고,       
