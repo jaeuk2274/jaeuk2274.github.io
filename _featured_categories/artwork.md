@@ -1,10 +1,10 @@
 ---
 layout: list
-title: Artwork
-slug: artwork
-menu: false
-submenu: false
+title: Side Project
+slug: side project
+menu: true
+submenu: true
 order: 1
 description: >
-  디자인이나 창작물들을 담습니다.
+  개인적인 자기계발을 위해 진행하는 사이드 프로젝트 과정들을 정리해 나갈 예정입니다.
 ---
