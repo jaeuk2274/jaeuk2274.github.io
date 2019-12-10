@@ -1,9 +1,9 @@
 ---
 layout: post
 title: "OOP 및 Interface"
-subtitle: "JAVA - OOP, Interface"
-categories: devlog
-tags: Java OOP Interface
+subtitle: "OOP 및 Interface"
+categories: devlop
+tags: Java
 comments: true
 ---
 
