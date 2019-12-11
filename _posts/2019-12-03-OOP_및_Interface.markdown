@@ -94,7 +94,7 @@ public interface Calculator {
     }
 }
 ```
-- static 메서드
+- static 메서드   
 인터페이스에 static 메소드 선언이 가능해졌고, 인터페이스를 이용하여 간단한 기능을 가지는 유틸리티성 인터페이스를 만들 수 있게 되었습니다.
 ``` java
 public interface Calculator {
