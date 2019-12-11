@@ -10,26 +10,26 @@ tags:
 comments : true
 ---
 
-# 시작
+## 시작
 본격적인 로드맵 시작으로 예제로 배우는 스프링 입문(개정판)을 스타트했다.        
 대충은 아는 개념들이긴 했지만, 예제 특히 코드로써 직접 구현해보기도 하고,               
 그냥 매번 쓰는 방식대로 사용만 해오다가 명확하게 어떤 방식으로 구현되는지, 동작 원리나 라이프사이클 그리고 다른 구현 방식들에 대해서도 알게되었다.      
 추가적으로 기존에 명확히 정리되지 않던 개념들은 찾아보고 정리하면서 더 좋은 공부가 된 것 같다.             
 
-## Spring Triangle - 자바 스프링 핵심 3대 요소
+### Spring Triangle - 자바 스프링 핵심 3대 요소
 
 1. Spring IoC - 제어 역전(IoC, Inversion of Control)    
 2. Spring AOP - 관점 지향 프로그래밍(Aspect Oriented Programming)     
 3. Spring PSA - 서비스 추상화(Portable Service Abstraction)    
 
 
-# Spring IoC
+## Spring IoC
 
 IoC (Inversion of Control)  
 제어의 역전이란?     
 제어의 역전을 설명하기 전에 먼저 알아야 할 것이 있다. 
 
-## DI
+### DI
 
 DI (Dependency Injection)     
 의존성 주입을 먼저 알아야 하는데      
@@ -49,7 +49,7 @@ OwnerController가(내가) 사용할 의존성(OwnerRepository)을 직접 new로
     
     
     
-## IoC (Inversion of Control) ?
+### IoC (Inversion of Control) ?
     
 그럼 IoC란 “내가 사용할 의존성을 누군가 알아서 만들어 준다.”는 개념이다.    
     
@@ -72,7 +72,7 @@ class OwnerController {
 
 
 
-## IoC Container
+### IoC Container
 
 그렇다면 스프링에서 의존성 주입은 어떤 방식으로 이루어질까?
 
@@ -198,7 +198,7 @@ public void getBean(){
  
  
  
-# 빈(Bean)
+## 빈(Bean)
  
 다시 빈에 대해 한번 더 정리하면,    
 
@@ -211,7 +211,7 @@ public void getBean(){
   
 아까 빈으로 등록하는 방법을 설명했지만, 좀 더 자세히 들어가자면.
 
-## 빈을 어떻게 등록하지?
+### 빈을 어떻게 등록하지?
 
 1.컴포넌트라는 메타 어노테이션을 사용하는 어노테이션 사용.      
 ex. Component Scanning을 활용하기 때문 (뒤에 설명)     
@@ -303,7 +303,7 @@ Repository 특이한 형태로 스프링 데이터 JPA가 제공하는 기능에
 
 
 
-## 빈을 어떻게 꺼내쓰지?
+### 빈을 어떻게 꺼내쓰지?
 
 다음은 이렇게 등록한 빈을 어떠한 방식들로 꺼내 쓸수 있는가에 대해 정리해본다.
 
@@ -314,7 +314,7 @@ Repository 특이한 형태로 스프링 데이터 JPA가 제공하는 기능에
 
 
 
-## 필요한 의존성을 어떻게 받아올까?
+### 필요한 의존성을 어떻게 받아올까?
 
 빈을 꺼내는 방법은 알겠는데, 그럼 어떤 방식으로 의존성 주입을 받을 수 있을까?   
 필요한 의존성을 어떻게 받아올 것이며, @Autowired / @Inject를 어디에 붙일까?
@@ -379,7 +379,7 @@ OwnerController가 OwnerRepository 없으면 돌아가지 조차 않는다.(실�
 
 하지만 생성자 방식은 경우에 따라 Circular Dependency(순환참조)가 발생할 수 있다.
 
-### Circular Dependency?
+#### Circular Dependency?
 순환 참조란?
 
 A가 B에 의존하고 B가 A에 의존적이라면 어떠한 객체를 먼저 만들어야 하는지 문제가 생긴다.      
@@ -392,7 +392,7 @@ A가 B에 의존하고 B가 A에 의존적이라면 어떠한 객체를 먼저 �
 
 
 
-## 과제
+### 과제
 OwnerController에 PetRepository 주입하기.
 
 ``` java 
