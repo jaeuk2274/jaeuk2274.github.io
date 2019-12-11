@@ -32,7 +32,7 @@ Service Abstraction(서비스 추상화) 참고문서 : https://en.wikipedia.org
 
 몇 가지 예들을 살펴보면, 
 
-1. 스프링 웹 MVC            
+첫번째로 스프링 웹 MVC            
 @Controller 와 @RequestMapping
 기존 코딩은       
 @Controller | @ReuqestMapping | ... 등 활용해서 뒤의 url 요청시 이 메서드가 처리하게끔 매핑을 하게 코딩이 되어 있다.             
@@ -63,10 +63,7 @@ spring-boot-starter-webflux
   
 즉, 스프링 웹 MVC도 PSA중 하나이다.     
 
-
-
-2. 스프링 트랜잭션
-
+두번째로는 스프링 트랜잭션
 스프링의 추상화 계증 트랜잭션을 사용할 때     
 >@Transactional               
 PlatformTransactionManager            
@@ -75,18 +72,13 @@ JpaTransacionManager | DatasourceTransactionManager | HibernateTransactionManage
 PlatformTransactionManager를 사용하는데 이는 역시 마찬가지로     
 JDBC를 쓸 수도 있고, JPA 사용하는 경우, 하이버네이트 등..          
 사용하는 경우에 기술에 따라서 다르게 바꾸더라도 코드는 변경하지 않고 사용할 수 있다.         
-
 스프링 트랜잭션 어노테이션도 여러가지 다양한 기술로 바꿔쓸 수 있는 PSA이다.           
 
-
-  
-3. 스프링 캐시      
+세번째는 스프링 캐시      
 스프링 캐시를 사용할 때 (CacheManager)    
-
 >@Cacheable | @CacheEvict | ...   
 CacheManager       
 JCacheManager | ConcurrentMapCacheManager | EhCacheCacheManager | ...   
-
 
 역시 마찬가지로 캐시도 여러 가지가 있는데(ehcache 등)
 어노테이션만 쓰면 상관없이 코드 변경 없이 사용이 가능하다.     
