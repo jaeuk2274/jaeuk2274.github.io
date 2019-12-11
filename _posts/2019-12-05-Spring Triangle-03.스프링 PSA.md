@@ -2,7 +2,7 @@
 title: Spring Triangle-03.스프링 PSA
 date: 2019-12-05
 categories:
-- Spring
+- Back-end
 tags:
 - Spring
 - PSA
@@ -10,8 +10,8 @@ comments : true
 ---
 
 
-# 스프링 PSA
-## PSA?
+## 스프링 PSA
+### PSA?
 우선 참고 문서를 보면
 >PSA(Portable Service Abstraction)란 환경의 변화와 관계없이 일관된 방식의 기술로의 접근 환경을 제공하려는 추상화 구조를 말한다. 
 이는 POJO 원칙을 철저히 따른 Spring 의 기능으로 Spring 에서 동작할 수 있는 Library 들은 POJO 원칙을 지키게끔 PSA 형태의 추상화가 되어있음을 의미한다. 
@@ -38,7 +38,7 @@ Service Abstraction(서비스 추상화) 참고문서 : https://en.wikipedia.org
 @Controller | @ReuqestMapping | ... 등 활용해서 뒤의 url 요청시 이 메서드가 처리하게끔 매핑을 하게 코딩이 되어 있다.             
       
       
-### webflux
+#### webflux
 그런데 스프링 5 새로운 프로그래밍 모델이 나왔는데,    
 스프링 웹 MVC 와 거의 흡사한 방법으로 코딩을 하지만, 기술이 완전히 다르다.         
 
