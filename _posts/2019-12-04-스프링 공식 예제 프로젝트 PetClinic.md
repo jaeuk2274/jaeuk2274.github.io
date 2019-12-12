@@ -1,7 +1,9 @@
 ---
 title: 스프링 공식 예제 프로젝트 PetClinic
 date: 2019-12-04
-categories: Back-end
+categories: 
+- Back-end
+- Spring
 tags: 
 - Spring 
 - PetClinic 
