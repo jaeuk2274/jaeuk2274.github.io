@@ -1,5 +1,5 @@
 ---
-title: [Angular]ng-grid 조회 타입별 칼럼 재빌드 
+title: "[Angular]ng-grid 조회 타입별 칼럼 재빌드" 
 date: 2019-12-12
 categories:
 - Front-end
