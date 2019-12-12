@@ -51,26 +51,26 @@ $scope.buildColumns = function(){
 ### 개선
 ```javascript
 $scope.buildColumns = function(){
-  var colArr = ['matchMesId', 'price', 'deleteFlag', 'serviceCd', 'serviceNm', 'startDate', 'endDate', 'remarks', 'testClass']; // 데이터관리
-  var colArr2 = ['pruefdatuv', 'insptDt', 'cnt']; // 미매칭
-  var colIdxArr = [];
-  var colIdxArr2 = [];
+	var colArr = ['matchMesId', 'price', 'deleteFlag', 'serviceCd', 'serviceNm', 'startDate', 'endDate', 'remarks', 'testClass']; // 데이터관리
+	var colArr2 = ['pruefdatuv', 'insptDt', 'cnt']; // 미매칭
+	var colIdxArr = [];
+	var colIdxArr2 = [];
+	
+	colArr.forEach(function(item, index, array) {
+		colIdxArr.push($scope.gridOptions.columnDefs.map(function (e) { return e.field; }).indexOf(item))
+	});
+	colArr2.forEach(function(item, index, array) {
+		colIdxArr2.push($scope.gridOptions.columnDefs.map(function (e) { return e.field; }).indexOf(item))
+	});
+	
+	colIdxArr.forEach(function(item, index, array) {
+		$scope.gridOptions.columnDefs[item].visible = ($scope.searchMap.type == "data");
+	});
+	colIdxArr2.forEach(function(item, index, array) {
+		$scope.gridOptions.columnDefs[item].visible = ($scope.searchMap.type == "unMatch");
+	});
 
-  colArr.forEach(function(item, index, array) {
-    colIdxArr.push($scope.gridOptions.columnDefs.map(function (e) { return e.field; }).indexOf(item))
-  });
-  colArr2.forEach(function(item, index, array) {
-    colIdxArr2.push($scope.gridOptions.columnDefs.map(function (e) { return e.field; }).indexOf(item))
-  });
-
-  colIdxArr.forEach(function(item, index, array) {
-    $scope.gridOptions.columnDefs[item].visible = ($scope.searchMap.type == "data");
-  });
-  colIdxArr2.forEach(function(item, index, array) {
-    $scope.gridOptions.columnDefs[item].visible = ($scope.searchMap.type == "unMatch");
-  });
-
-  $scope.gridOptions.ngGrid.buildColumns(); 
+	$scope.gridOptions.ngGrid.buildColumns(); 
 };
 ```
 
