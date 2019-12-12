@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "OOP 및 Interface"
+title: "[Java]OOP 및 Interface"
 subtitle: "OOP 및 Interface"
 categories: 
 - Back-end
