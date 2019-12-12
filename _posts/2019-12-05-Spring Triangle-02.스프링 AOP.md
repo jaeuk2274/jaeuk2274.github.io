@@ -3,7 +3,6 @@ title: Spring Triangle-02.스프링 AOP
 date: 2019-12-05
 categories: 
 - Back-end
-- Spring
 tags:
 - Spring
 - AOP
