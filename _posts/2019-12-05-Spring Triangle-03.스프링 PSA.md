@@ -2,7 +2,9 @@
 title: Spring Triangle-03.스프링 PSA
 date: 2019-12-05
 categories:
+categories: 
 - Back-end
+- Spring
 tags:
 - Spring
 - PSA
