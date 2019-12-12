@@ -51,8 +51,8 @@ $scope.buildColumns = function(){
 ### 개선
 ```javascript
 $scope.buildColumns = function(){
-  var colArr = ['matchMesId', 'price', 'deleteFlag', 'serviceCd', 'serviceNm', 'startDate', 'endDate', 'remarks', 'testClass']; // 관리에만 보이는 칼럼
-  var colArr2 = ['pruefdatuv', 'insptDt']; // 매칭에만 보이는 
+  var colArr = ['matchMesId', 'price', 'deleteFlag', 'serviceCd', 'serviceNm', 'startDate', 'endDate', 'remarks', 'testClass']; // 데이터관리
+  var colArr2 = ['pruefdatuv', 'insptDt', 'cnt']; // 미매칭
   var colIdxArr = [];
   var colIdxArr2 = [];
 
@@ -63,20 +63,11 @@ $scope.buildColumns = function(){
     colIdxArr2.push($scope.gridOptions.columnDefs.map(function (e) { return e.field; }).indexOf(item))
   });
 
-  var flag, flag2;
-  if($scope.searchMap.type == "unMatch"){
-    flag = false;
-    flag2 = true;
-  }else if($scope.searchMap.type == "data"){
-    flag = true;
-    flag2 = false;
-  }  
-
   colIdxArr.forEach(function(item, index, array) {
-    $scope.gridOptions.columnDefs[item].visible = flag;
+    $scope.gridOptions.columnDefs[item].visible = ($scope.searchMap.type == "data");
   });
   colIdxArr2.forEach(function(item, index, array) {
-    $scope.gridOptions.columnDefs[item].visible = flag2;
+    $scope.gridOptions.columnDefs[item].visible = ($scope.searchMap.type == "unMatch");
   });
 
   $scope.gridOptions.ngGrid.buildColumns(); 
