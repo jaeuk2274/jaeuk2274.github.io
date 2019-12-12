@@ -3,7 +3,6 @@ title: Spring Triangle-01.스프링 IoC
 date: 2019-12-05
 categories: 
 - Back-end
-- Java
 tags:
 - Spring 
 - IoC
