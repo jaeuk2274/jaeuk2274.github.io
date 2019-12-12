@@ -2,7 +2,9 @@
 layout: post
 title: "OOP 및 Interface"
 subtitle: "OOP 및 Interface"
-categories: Back-end
+categories: 
+- Back-end
+- Java
 tags: 
 - Java
 - OOP
