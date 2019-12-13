@@ -43,9 +43,9 @@ wrapper 클래스를 다시 만들어서도 해보고, JSON 변환도 하고 다
 [출처](https://stackoverflow.com/questions/23012841/receiving-json-and-deserializing-as-list-of-object-at-spring-mvc-controller)
 (아마 현재 버전에서는 개선이 되었겠죠 당연히.....)    
 
->array[index][element] 로 쓰나.. 
-array[index].element로 쓰나..
-이 차이에 따라 안된다는게...ㅠㅠ
+>array[index][element] 로 쓰나..      
+array[index].element로 쓰나..     
+이 차이에 따라 안된다는게...ㅠㅠ     
 
 
 
