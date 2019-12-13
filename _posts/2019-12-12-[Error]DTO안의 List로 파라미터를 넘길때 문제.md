@@ -29,7 +29,7 @@ array[index].element = value 이런 식으로 넘어가야 하는데,
 
 array[index][element] = value 이렇게 전송이 되어서 생기는 문제이다.                      
 
->List\<DTO\> 는 list[0].budg10 은 사용가능한데, list[0][budg10]는 사용이 불가능하다.            
+>List\<DTO\> 는 list[0].budg10 은 사용가능한데, list[0][budg10]는 사용이 불가능하다. 는 말이다..             
 List\<map\> 은 둘 다 사용가능하다...
 
 
@@ -44,7 +44,7 @@ List\<map\> 은 둘 다 사용가능하다...
 
 wrapper 클래스를 다시 만들기도 해보고, JSON 변환도 하고 다 해봤는데 해결이 안되어서,        
 [https://stackoverflow.com/questions/23012841/receiving-json-and-deserializing-as-list-of-object-at-spring-mvc-controller](https://stackoverflow.com/questions/23012841/receiving-json-and-deserializing-as-list-of-object-at-spring-mvc-controller)         
-(똑같은데.. 그대로 같은 에러가 발생해서 아마 현재 버전에서는 개선이 되었겠죠.....)           
+(똑같은데.. 그대로 같은 에러가 발생해서 버전 문제인가 싶기도 하고..)           
      
 우선은 .[element] 로 쓰나 .element 로 쓰나 상관 없이 잘 받는 Map으로 사용했다..             
 
