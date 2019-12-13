@@ -40,7 +40,7 @@ array[index][element] = value 이렇게 전송이 되어서 생기는 문제라�
 
 
 wrapper 클래스를 다시 만들어서도 해보고, JSON 변환도 하고 다 해봤는데 해결이 안되어서,        
-[출처](https://stackoverflow.com/questions/23012841/receiving-json-and-deserializing-as-list-of-object-at-spring-mvc-controller)
+[출처](https://stackoverflow.com/questions/23012841/receiving-json-and-deserializing-as-list-of-object-at-spring-mvc-controller)          
 (아마 현재 버전에서는 개선이 되었겠죠 당연히.....)           
 
 >array[index][element] 로 쓰나..      
