@@ -39,11 +39,11 @@ List\<map\> 은 둘 다 사용가능하다...
 
 이렇게 다시 적어줘서 해결한다는 글도 봤고,        
 (물론 해결이야 하겠지만.. 그럼 또 똑같은거 두 번씩 써줘야 하니까.. )          
-[출처](http://www.bmchild.com/2014/02/spring-mvc-3-property-referenced-in.html)   
+[http://www.bmchild.com/2014/02/spring-mvc-3-property-referenced-in.html](http://www.bmchild.com/2014/02/spring-mvc-3-property-referenced-in.html)   
 
 
 wrapper 클래스를 다시 만들기도 해보고, JSON 변환도 하고 다 해봤는데 해결이 안되어서,        
-[출처](https://stackoverflow.com/questions/23012841/receiving-json-and-deserializing-as-list-of-object-at-spring-mvc-controller)         
+[https://stackoverflow.com/questions/23012841/receiving-json-and-deserializing-as-list-of-object-at-spring-mvc-controller](https://stackoverflow.com/questions/23012841/receiving-json-and-deserializing-as-list-of-object-at-spring-mvc-controller)         
 (똑같은데.. 그대로 같은 에러가 발생해서 아마 현재 버전에서는 개선이 되었겠죠.....)           
      
 우선은 .[element] 로 쓰나 .element 로 쓰나 상관 없이 잘 받는 Map으로 사용했다..             
