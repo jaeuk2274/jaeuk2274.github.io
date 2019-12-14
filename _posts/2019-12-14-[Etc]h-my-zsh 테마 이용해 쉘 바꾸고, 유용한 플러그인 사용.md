@@ -1,5 +1,5 @@
 ---
-title: "h-my-zsh 테마 이용해 쉘 바꾸고, 유용한 플러그인 사용"
+title: "[shell]h-my-zsh 테마 이용해 쉘 바꾸고, 유용한 플러그인 사용"
 date: 2019-12-14
 categories:
 - Etc
