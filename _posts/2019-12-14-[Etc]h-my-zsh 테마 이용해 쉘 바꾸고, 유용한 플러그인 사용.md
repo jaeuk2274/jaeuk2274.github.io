@@ -18,4 +18,8 @@ comments : true
 
 [h-my-zsh 테마 이용해 쉘 바꾸고, 유용한 플러그인 사용](http://heetop.blogspot.com/2017/10/oh-my-zsh_12.html)        
 
-[맥 환경에서 vscode, intelliJ에 zsh 지정하기](https://jojoldu.tistory.com/400)               
+[맥 환경에서 vscode, intelliJ에 zsh 지정하기](https://jojoldu.tistory.com/400)     
+> 이 블로그 주인분.. 유투브에서 본 분인데 배민 정산 파트쪽 개발팀장 이셨던 것 같은데.. 본받고 싶은 분이다.. 일일 커밋 3년..       
+나도 어느 정도 학습을 진행하고 나면 업무 외적인 사이드 프로젝트를 진행할 텐데,       
+블로그 구경하다가 회고록도 보고, 글들도 보고 왔는데.. 그 말이 참 와닿는다.       
+단거리와 장거리.. 참 좋은 방향이고, 좋은 말씀이신 것 같다.       
