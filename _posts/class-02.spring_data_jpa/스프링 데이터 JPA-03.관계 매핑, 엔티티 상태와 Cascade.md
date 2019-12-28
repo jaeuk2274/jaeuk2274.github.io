@@ -74,8 +74,8 @@ public class Study {
 @Transactional
 public class JpaRunner implements ApplicationRunner {
 
-    @PersistenceContext // jpa 가장 핵심적인 빈
-    EntityManager entityManager;
+    @PersistenceContext 
+    EntityManager entityManager; // jpa 가장 핵심적인 빈
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
