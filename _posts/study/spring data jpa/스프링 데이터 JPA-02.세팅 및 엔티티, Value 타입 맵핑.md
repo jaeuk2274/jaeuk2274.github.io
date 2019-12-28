@@ -1,5 +1,5 @@
 ---
-title: 스프링 데이터 JPA-02.세팅 및 엔티티, Value 타입 맵핑 
+title: "스프링 데이터 JPA-02.세팅 및 엔티티, Value 타입 맵핑"
 date: 2019-12-27
 categories: 
 - Back-end
