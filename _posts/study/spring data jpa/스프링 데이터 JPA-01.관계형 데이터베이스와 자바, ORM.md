@@ -1,5 +1,5 @@
 ---
-title: 스프링 데이터 JPA-01.관계형 데이터베이스와 자바, ORM 
+title: "스프링 데이터 JPA-01.관계형 데이터베이스와 자바, ORM" 
 date: 2019-12-27
 categories: 
 - Back-end
