@@ -1,0 +1,10 @@
+---
+layout: list
+title: Book
+slug: Book
+menu: true
+submenu: false
+order: 5
+description: >
+  분야에 상관없이 책에 관한 내용들(학습한 내용, 읽은 책들, 느낀 점 등)을 정리할 예정입니다.
+---
