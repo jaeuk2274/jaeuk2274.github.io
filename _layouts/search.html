@@ -2,21 +2,18 @@
 layout: base
 ---
 
+{% assign author = site.data.authors[page.author] | default:site.data.authors.first[1] %}
+
+<script async src="https://cse.google.com/cse.js?cx=017637555849097978177:zjwzli1safz"></script>
 
 
 <article class="page" role="article">
-  <script async src="https://cse.google.com/cse.js?cx=017637555849097978177:zjwzli1safz"></script>
-  <div class="gcse-searchbox"></div>
-  
-  
+
   <h1 class="page-title hr" style="padding-bottom:1rem">{{ page.title }}</h1>
 
-
-  
+  <div class="gcse-searchbox"></div>
   
   <div class="markdown-body">
-    {{ content }} 2
-  </div> 
-  
-  
+    {{ content }} 3
+  </div>
 </article>
