@@ -1,10 +1,8 @@
+{% assign author = site.data.authors[page.author] | default:site.data.authors.first[1] %}
 
-  <aside class="search" role="complementary">
-      <script async src="https://cse.google.com/cse.js?cx=017637555849097978177:zjwzli1safz"></script>
-      <div class="gcse-search"></div>
-    {% include search.html heading='Search' heading_tag='h2' %}
-      
-
-  
-</aside>
+{% if author.about %}
+  <aside class="author" role="complementary">
+    {% include author.html author=author heading='About' heading_tag='h2' %}
+  </aside>
+{% endif %}
 
