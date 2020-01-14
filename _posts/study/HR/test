@@ -120,7 +120,7 @@ write_log('계산조건 - 세액계산여부 : '||p_tax_cal);
 write_log('계산조건 - 세액감액율 : '||nvl(p_tax_subrate,0)||'%');
 
 
-### 1. 통상시급을 구하기 위한 소정 근무시간 Setting
+## 1. 통상시급을 구하기 위한 소정 근무시간 Setting
 g_reg_time := to_number(is_duty_common.common_value('REGULAR_WORK_TIME')); 
 
     select *
@@ -133,7 +133,7 @@ g_reg_time := to_number(is_duty_common.common_value('REGULAR_WORK_TIME'));
 81	GUNTAE	REGULAR_WORK_TIME	184	소정근로시간
 
 
-### 2. get_date_period; --급여계산기간  
+## 2. get_date_period; --급여계산기간  
 
 SELECT VALUE$
 INTO l_date_ftemp
@@ -203,7 +203,7 @@ AND ORG_ID = is_func.org_id;
 81	PAY	DAY_PER_MONTHLY	30	일할계산 기준일
 
 
-### 3. get_fixed_reg_type
+## 3. get_fixed_reg_type
 
 CURSOR CS_REG_TYPE IS
 SELECT REG_TYPE, MASTER_COLUMN
@@ -227,7 +227,7 @@ FOR C IN CS_REG_TYPE LOOP
 END LOOP;
 
 
-### 4. 
+## 4. 
     curs_str := get_curs_str(p_paymth
                             ,p_compycd
                             ,p_deptcd
@@ -256,12 +256,12 @@ l_curs_str := 'SELECT * FROM IS_PE01 ';
 g_pay_date_to = 20.01.15
 40 격려금
 1. 급여형태 인턴이고
-2. 입사일자가 급여기간 전
-3. 퇴사일자가 급여기간 이후 존재하면
+2. 입사일자가 급여기간(20.01.15) 전
+3. 퇴사일자가 급여기간(20.01.15) 이후 존재하면
 
-      l_curs_str := l_curs_str || 'WHERE  IGENTDAT <= ''' || g_pay_date_to || '''' ||
-                    'AND PAYDIV <> ''90''' || -- 인턴
-                    'AND  (RETDAT IS NULL OR RETDAT >= ''' || g_pay_date_to ||
+l_curs_str := l_curs_str || 'WHERE  IGENTDAT <= ''' || g_pay_date_to || '''' ||
+            'AND PAYDIV <> ''90''' || -- 인턴
+            'AND  (RETDAT IS NULL OR RETDAT >= ''' || g_pay_date_to ||
 
 IGENTDAT -> 입사일자
 PAYDIV -> 급여형태(E106)
@@ -275,6 +275,44 @@ E106	40	호봉제			Y
 E106	70	연봉제(계약직)			N
 E106	90	인턴(계약직)			N
 E106	99	미지급			N
+
+
+
+--통신비(75)       5일기준 재중인 직원
+..? 75 어디서 따로 주는건지...  75코드 현재 상무보성과연봉임..
+
+
+76 직책활동비
+ELSIF g_paycd IN ('76') THEN
+  l_curs_str := l_curs_str || 'WHERE  IGENTDAT <= ''' || g_pay_date_to || '''' ||
+                'AND PAYDIV <> ''30''' ||
+                'AND (RETDAT IS NULL OR RETDAT > ''' || l_7_day ||
+                ''')';
+
+1. 급여형태 연봉제(임원)이 아니고
+2. 입사일자가 급여기간(20.01.15) 전
+3. 퇴사일자가 전달 마지막 날짜(19.12.31)보다 크면. 이번달 퇴사면 안줌.
+
+
+-- 2017.03.29 추가 69 공사파견활동비 ( 76 =  직책활동비랑 동일 )
+ELSIF g_paycd IN ('69') THEN
+  l_curs_str := l_curs_str || 'WHERE  IGENTDAT <= ''' || g_pay_date_to || '''' ||
+                'AND PAYDIV <> ''30''' ||
+                'AND (RETDAT IS NULL OR RETDAT > ''' || l_7_day ||
+                
+해당 두개합쳐도 무방 합침.
+
+ELSIF g_paycd IN ('50', '70') THEN
+--임원성과연봉,임원활동비
+l_curs_str := l_curs_str || 'WHERE  IGENTDAT <= ''' || g_pay_date_to || '''' ||
+            'AND  (RETDAT IS NULL OR RETDAT >= ''' || g_paydat ||
+            ''')' || 'AND PAYDIV = ''30'''
+             ;
+
+
+
+
+
 
 
 
