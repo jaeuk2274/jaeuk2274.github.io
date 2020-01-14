@@ -1188,7 +1188,8 @@ H12	출산전후휴가(다태아)	02	AL
 RETURN l_cnt - l_cnt2;
 
 
-
+이전 데이타 삭제
+delete_pre_data;
 
 
 
