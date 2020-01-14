@@ -777,7 +777,7 @@ g_date_from ~ g_date_to
 급여 
 1) 해당 근태기간에 하루라도 근무시 통상임금 100%지급하지만 일할계산됨
    적용직군 : 계약직(상무보), 정규직(사무), 정규직(기술), 계약직(사무), 계약직(기술), 계약직(지원)
-
+-- TODO 왜 이렇게 했는지 파악...
       SELECT CASE 
                WHEN description LIKE '계약직(사무)' OR 
                     description LIKE '계약직(기술)' OR
@@ -814,3 +814,22 @@ g_retire_check
 g_retire
 
 
+소급아니면
+bvk_payroll_calculate2 를 쓴다 확인 필요 (2) , 1 아니고 2 붙었다 확인할것.
+
+    IF    (g_calc_module != 'RETROACT') THEN
+      g_non_work_days := bvk_payroll_calculate2.return_none_work_days (p_paycd      => g_paycd,
+                                                                      p_emp_id     => emp.emp_id,
+                                                                      p_date_from  => g_duty_from,
+                                                                      p_date_to    => g_duty_to,
+                                                                      p_date_from2 => g_duty_from_30,
+                                                                      p_date_to2   => g_duty_to_30);
+                                                                      
+    ELSIF (g_calc_module = 'RETROACT') THEN
+      g_non_work_days := bvk_payroll_calculate2_ret.return_none_work_days (p_paycd      => g_paycd,
+                                                                    p_emp_id     => emp.emp_id,
+                                                                    p_date_from  => g_duty_from,
+                                                                    p_date_to    => g_duty_to,
+                                                                    p_date_from2 => g_duty_from_30,
+                                                                    p_date_to2   => g_duty_to_30);
+    END IF;
