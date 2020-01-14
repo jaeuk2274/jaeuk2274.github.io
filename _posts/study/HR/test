@@ -654,11 +654,23 @@ G800	002	개인연금(보조금)	2012_개인연금		Y	2012-05-14 오후 5:49:44	
         g_duty_to_2 := add_months(g_duty_to_2, 1);
       END IF;
 
+is_pay_common.pay_period(to_char(p_duty_to, 'YYYYMM'), g_duty_from_2, g_duty_to_2);
+->
+is_month_common.month_period(p_paymth, p_date_from, p_date_to);
+->
+
+l_date_ftemp -1,16
+
+l_date_ttemp 0,15
+...
+상여인경우 상여계산 기준으로 세팅
+
+
 
 ________ 루프 시작
 필터한 사원만큼 반복
 
-get_revision_num## 
+### get_revision_num 
 소급 아니면
 히스토리 제일 최신의 l_revision_num 세팅 1개.
 ??
@@ -695,6 +707,12 @@ revision_date 기준 확인
 
 휴직/징계등의 발령 사항 확인
 set_office_order;
+-> return_bal_cnt
+RETURN NUMBER IS
+ l_cnt  NUMBER;
+
+
+
 
 
 30 성과금일경우
@@ -726,7 +744,13 @@ set_office_order;
                          AND p.balgb       = g.codeid
                          AND g.reference_5 = 'Y'
                          AND p.confirm     = 'Y'
+                         
+                         
 -- 소급은 UNION으로 덕지덕지 붙어있음.
+1. 부서변경('C01')인데, 본사대기(B120_04) 부서인경우
+
+
+
 
 
 ### 근속기간 계산
