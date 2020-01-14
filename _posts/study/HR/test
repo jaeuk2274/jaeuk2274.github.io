@@ -1,0 +1,83 @@
+급상여계산
+main(errbuf            OUT NOCOPY VARCHAR2
+,retcode           OUT NOCOPY NUMBER
+,p_paycd           VARCHAR2 DEFAULT NULL -- 10 급여 30 경영성과금
+,p_paydat          DATE DEFAULT NULL -- 지급일자
+,p_paymth          VARCHAR2 DEFAULT NULL -- 귀속년월
+,p_compycd         VARCHAR2 DEFAULT '1000' 
+,p_deptcd          VARCHAR2 DEFAULT NULL 
+,p_include_subdept VARCHAR2 DEFAULT NULL
+,p_jikjgcd         VARCHAR2 DEFAULT NULL
+,p_jikgubcd        VARCHAR2 DEFAULT NULL
+,p_regulargb       VARCHAR2 DEFAULT NULL
+,p_paydiv          VARCHAR2 DEFAULT NULL
+,p_emp_id          NUMBER DEFAULT NULL
+,p_pay_rate        NUMBER DEFAULT NULL
+,p_pay_amount      NUMBER DEFAULT NULL
+,p_tax_from        VARCHAR2 DEFAULT NULL
+,p_tax_to          VARCHAR2 DEFAULT NULL
+,p_duty_from       DATE DEFAULT NULL
+,p_duty_to         DATE DEFAULT NULL
+,p_tax_cal         VARCHAR2 DEFAULT 'N' 세액계산여부 Y
+,p_tax_subrate     NUMBER DEFAULT 0)
+
+
+write_log('급상여계산일시 : '||TO_CHAR(sysdate, 'RRRR-MM-DD HH24:MI:SS'));
+write_log('');
+write_log('계산조건 - 급상여구분 : '||IS_PAY_COMMON.PAYNM(p_paycd));
+
+00	급여상여
+10	급여
+20	정기상여
+21	기본상여
+22	월동비
+23	체력단련비
+24	명절상여
+30	경영성과금
+50	임원성과연봉
+60	소급분
+68	영업활동비
+69	현장활동비
+71	부서장활동비
+74	경영성과금_2
+75	상무보성과연봉
+76	직책활동비
+77	특별격려금
+78	업무추진비
+80	기타소득
+81	근속포상
+82	기술기여금
+83	인정상여
+84	숙소지원금
+85	학자금
+86	스마트폰지원금
+89	장려금
+91	근속포상_2
+92	퇴직포상
+921	교육수당
+922	노사상생수당
+93	전문자격포상
+94	재외수당
+95	교육지원금
+96	임원포상
+97	기타포상금
+98	임원장기인센티브
+999	임원활동비
+X1	공탁
+     
+write_log('계산조건 - 지급일자 : '||TO_CHAR(p_paydat,'RRRR-MM-DD'));
+write_log('계산조건 - 귀속년월 : '||p_paymth);
+
+
+write_log('계산조건 - 부서 : '||l_deptnm);
+write_log('계산조건 - 하위조직포함 : '||p_include_subdept);
+write_log('계산조건 - 직급 : '||IS_FUNC.CODENM('E104', p_paydiv));
+write_log('계산조건 - 직군 : '||IS_FUNC.CODENM('E108', p_paydiv));
+write_log('계산조건 - 급여형태 : '||IS_FUNC.CODENM('E106', p_paydiv));
+write_log('계산조건 - 사번 : '||IS_FUNC.EMPCD(p_emp_id)||' '||IS_FUNC.HNAME(p_emp_id));
+
+
+격려금의 겨우 세금계산기간 넣지 않으면 세금계산 x
+20, 30, 50
+
+
