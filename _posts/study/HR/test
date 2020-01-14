@@ -135,7 +135,8 @@ g_reg_time := to_number(is_duty_common.common_value('REGULAR_WORK_TIME'));
 
 2.    get_date_period; --급여계산기간  
 
-SELECT *
+SELECT VALUE$
+INTO l_date_ftemp
 FROM IS_SY03
 WHERE NAME = 'BONUS_DILIGENCE_FROM'
 AND TYPE = 'GUNTAE'
@@ -144,11 +145,24 @@ AND ORG_ID = 81;
 급여기간
 81	GUNTAE	BONUS_DILIGENCE_FROM	-1,16	급/상여시작일
 
-SELECT *
+SELECT VALUE$
+INTO l_date_ttemp
 FROM IS_SY03
 WHERE NAME = 'BONUS_DILIGENCE_TO'
 AND TYPE = 'GUNTAE'
 AND ORG_ID = 81;
 
 81	GUNTAE	BONUS_DILIGENCE_TO	0,15	급/상여종료일
+
+
+IF (l_date_ftemp IS NOT NULL) THEN
+l_date_fm := SUBSTR(l_date_ftemp, 1, INSTR(l_date_ftemp, ',') - 1);
+l_date_fd := SUBSTR(l_date_ftemp, INSTR(l_date_ftemp, ',') + 1);
+IF TO_CHAR(LAST_DAY(ADD_MONTHS(to_date(p_dutymth, 'yyyymm'), l_date_fm)), 'DD') <
+   l_date_fd THEN
+  p_date_from := LAST_DAY(ADD_MONTHS(to_date(p_dutymth, 'yyyymm'), l_date_fm));
+ELSE
+  p_date_from := TO_DATE(TO_CHAR(ADD_MONTHS(to_date(p_dutymth, 'yyyymm'), l_date_fm), 'YYYYMM') ||
+                         LTRIM(TO_CHAR(l_date_fd, '00')), 'YYYYMMDD');
+END IF;
 
