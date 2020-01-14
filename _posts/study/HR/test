@@ -22,48 +22,69 @@ main(errbuf            OUT NOCOPY VARCHAR2
 ,p_tax_subrate     NUMBER DEFAULT 0)
 
 
+
+    TYPE       my_curs_type is REF CURSOR;
+    curs       my_curs_type;
+    curs_str   VARCHAR2(3000);
+    l_deptnm   VARCHAR2(100);
+    l_cal_id   NUMBER;
+    l_7b_amt   NUMBER;
+    l_temp_9a  NUMBER;
+    tsStartTime TIMESTAMP;
+
+
+    IF g_calc_module IS NULL THEN
+      g_calc_module := 'REAL_PAY'; -- 급여면 , 소급이면 RETA..
+      g_req_type    := 'PAY_CALC';
+
+    END IF;
+
 write_log('급상여계산일시 : '||TO_CHAR(sysdate, 'RRRR-MM-DD HH24:MI:SS'));
 write_log('');
 write_log('계산조건 - 급상여구분 : '||IS_PAY_COMMON.PAYNM(p_paycd));
 
-00	급여상여
-10	급여
-20	정기상여
-21	기본상여
-22	월동비
-23	체력단련비
-24	명절상여
-30	경영성과금
-50	임원성과연봉
-60	소급분
-68	영업활동비
-69	현장활동비
-71	부서장활동비
-74	경영성과금_2
-75	상무보성과연봉
-76	직책활동비
-77	특별격려금
-78	업무추진비
-80	기타소득
-81	근속포상
-82	기술기여금
-83	인정상여
-84	숙소지원금
-85	학자금
-86	스마트폰지원금
-89	장려금
-91	근속포상_2
-92	퇴직포상
-921	교육수당
-922	노사상생수당
-93	전문자격포상
-94	재외수당
-95	교육지원금
-96	임원포상
-97	기타포상금
-98	임원장기인센티브
-999	임원활동비
-X1	공탁
+G101	00	급여상여	급여,분기,명절,성과상여금을 의미함
+G101	10	급여	BVK
+G101	20	정기상여	기본급+직능급+근속급+직책수당+중식비의 400%(1/4/7/10월 각 100%)
+G101	21	기본상여	기본급+직능급+근속급+직책수당+중식비의 200%(2/8월 각 100%)
+G101	22	월동비	기본급+직능급+근속급+직책수당+중식비의 100%(11월)
+G101	23	체력단련비	기본급+직능급+근속급+직책수당+중식비의 100%(5월)
+G101	24	명절상여	설, 추석 5일 전 지급(정액 500,000원)
+G101	30	경영성과금	기본급+직능급+근속급+직책수당+중식비의 0~400%(3/6/9/12월)
+G101	50	임원성과연봉	BVK
+G101	60	소급분	
+G101	68	영업활동비	부서장활동비 셋팅 동일
+G101	69	현장활동비	직책활동비 셋팅 동일
+G101	71	부서장활동비	BVK
+G101	74	경영성과금_2	
+G101	75	상무보성과연봉	
+G101	76	직책활동비	
+G101	77	특별격려금	
+G101	78	업무추진비	
+G101	80	기타소득	구_포상금(2013.06.10)
+G101	81	근속포상	
+G101	82	기술기여금	
+G101	83	인정상여	
+G101	84	숙소지원금	
+G101	85	학자금	
+G101	86	스마트폰지원금	
+G101	89	장려금	2014-10-02 추가
+G101	91	근속포상_2	
+G101	92	퇴직포상	
+G101	921	교육수당	
+G101	922	노사상생수당	
+G101	93	전문자격포상	
+G101	94	재외수당	
+G101	95	교육지원금	
+G101	96	임원포상	
+G101	97	기타포상금	
+G101	98	임원장기인센티브	
+G101	999	임원활동비	BVK
+G101	A1	퇴직금	
+G101	G1	연차충당	
+G101	G2	퇴직충당(IFRS)	
+G101	G3	퇴직충당(KGAPP)	
+G101	X1	공탁	압류등록에서 사용
      
 write_log('계산조건 - 지급일자 : '||TO_CHAR(p_paydat,'RRRR-MM-DD'));
 write_log('계산조건 - 귀속년월 : '||p_paymth);
@@ -77,7 +98,57 @@ write_log('계산조건 - 급여형태 : '||IS_FUNC.CODENM('E106', p_paydiv));
 write_log('계산조건 - 사번 : '||IS_FUNC.EMPCD(p_emp_id)||' '||IS_FUNC.HNAME(p_emp_id));
 
 
+코드, 지급일자, 귀속년월, 사업장 유효성검사
+
 격려금의 겨우 세금계산기간 넣지 않으면 세금계산 x
 20, 30, 50
 
+세금계산기간 유효성검사
+
+지급율, 지급액 유효성검사
+
+지급률, 지급액 둘중하나
+
+write_log('계산조건 - 지급율 : '||p_pay_rate);
+write_log('계산조건 - 지급액 : '||p_pay_amount);
+write_log('계산조건 - 세액계산기간 : '||p_tax_from||'-'||p_tax_to);
+
+상여계산기간 있으면 
+write_log('계산조건 - 상여계산기간 : '||TO_CHAR(p_duty_from,'RRRR-MM-DD')||'-'||TO_CHAR(p_duty_to,'RRRR-MM-DD'));
+
+write_log('계산조건 - 세액계산여부 : '||p_tax_cal);
+write_log('계산조건 - 세액감액율 : '||nvl(p_tax_subrate,0)||'%');
+
+
+1. 통상시급을 구하기 위한 소정 근무시간 Setting
+g_reg_time := to_number(is_duty_common.common_value('REGULAR_WORK_TIME')); 
+
+    select *
+    --  into l_value
+      from is_sy03
+     where name = upper('REGULAR_WORK_TIME')
+       and type = 'GUNTAE'
+       and org_id = is_func.org_id;
+       
+81	GUNTAE	REGULAR_WORK_TIME	184	소정근로시간
+
+
+2.    get_date_period; --급여계산기간  
+
+SELECT *
+FROM IS_SY03
+WHERE NAME = 'BONUS_DILIGENCE_FROM'
+AND TYPE = 'GUNTAE'
+AND ORG_ID = 81;
+
+급여기간
+81	GUNTAE	BONUS_DILIGENCE_FROM	-1,16	급/상여시작일
+
+SELECT *
+FROM IS_SY03
+WHERE NAME = 'BONUS_DILIGENCE_TO'
+AND TYPE = 'GUNTAE'
+AND ORG_ID = 81;
+
+81	GUNTAE	BONUS_DILIGENCE_TO	0,15	급/상여종료일
 
