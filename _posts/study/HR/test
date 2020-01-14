@@ -655,4 +655,162 @@ G800	002	개인연금(보조금)	2012_개인연금		Y	2012-05-14 오후 5:49:44	
       END IF;
 
 
-get_revision_num
+________ 루프 시작
+필터한 사원만큼 반복
+
+get_revision_num## 
+소급 아니면
+히스토리 제일 최신의 l_revision_num 세팅 1개.
+??
+-- TODO 가장 최신으로 적용해도 되는지..? 일자 적용 안해도 되는건지 추후 확인.
+
+정보 다 세팅해주고
+
+밑에서 해주네요.. 
+근태마감일 기준 정보로 히스토리 읽어서 세팅
+
+   -- 근태마감일 기준 정보로 계산하도록
+      SELECT h1.jikgubcd_grade
+        INTO emp.jikgubcd_grade
+        FROM is_pe01_history h1
+       WHERE 1=1
+         AND h1.emp_id = emp.emp_id
+          AND h1.revision_num = (
+                                  SELECT MAX(h.revision_num)
+                                    from is_pe01_history h
+                                   WHERE 1=1
+                                     AND h.emp_id = h1.emp_id
+                                     AND h.revision_date <= g_duty_to
+                                     );
+
+revision_date 기준 확인
+
+
+직능자격 - E114
+60일경우
+
+퇴사자 급여 기지급여부 체크
+
+마감체크
+
+휴직/징계등의 발령 사항 확인
+set_office_order;
+
+
+30 성과금일경우
+
+
+나머지
+      SELECT COUNT(DISTINCT v$date) v$cnt
+        INTO l_cnt
+        FROM (SELECT r.*,
+                     p.*
+                FROM (SELECT * 
+                        FROM is_py60
+                       WHERE v$date BETWEEN GREATEST(p_duty_from, p_date_from) AND LEAST(p_duty_to, p_date_to)) r,
+                     (SELECT p.emp_id,
+                             p.baldate,
+                             p.bal_section,
+                             p.balgb,
+                             g.description balgb_disp,
+                             p.baldate_from,
+                             p.baldate_to,
+                             p.description,
+                             p.confirm
+                        FROM is_pe31 p, -- 발령
+                             is_sy02 g
+                       WHERE 1 = 1
+                         AND substr(p.balgb, 1, 1) IN ('I', 'G') -- I,G 징계 감봉 관련..
+                         AND p.balgb       NOT IN ('I18')
+                         AND p.emp_id      = p_emp_id
+                         AND p.balgb       = g.codeid
+                         AND g.reference_5 = 'Y'
+                         AND p.confirm     = 'Y'
+-- 소급은 UNION으로 덕지덕지 붙어있음.
+
+
+### 근속기간 계산
+calc_cont_period;
+
+40 호봉제 아닌경우
+      g_cont_mth := months_between(g_pay_date_from, emp.IGENTDAT);
+                        19.12.16, 입사일
+호봉제인경우                        
+    ELSE
+      IF (emp.RETDAT IS NULL) THEN
+        g_cont_mth := months_between(g_pay_date_to + 1, emp.IGENTDAT);
+      ELSIF (emp.RETDAT >= g_pay_date_to) THEN
+        g_cont_mth := months_between(g_pay_date_to + 1, emp.IGENTDAT);
+      ELSE
+        g_cont_mth := months_between(emp.RETDAT + 1, emp.IGENTDAT);
+      END IF;
+    END IF;  
+    
+근속기간     
+g_cont_mth                   
+      
+      
+### 근태기간 계산
+set_date_period;
+                        19.12.16
+    IF (emp.IGENTDAT > g_pay_date_from) THEN
+      g_date_from := emp.IGENTDAT;
+    ELSE
+      g_date_from := g_pay_date_from;
+    END IF;
+                        20.01.15
+    IF (emp.RETDAT < g_pay_date_to) THEN
+      g_date_to := emp.RETDAT;
+    ELSE
+      g_date_to := g_pay_date_to;
+    END IF;
+
+근태기간
+g_date_from ~ g_date_to 
+
+    
+###중도 입퇴사 체크
+    
+퇴사일자가 근태기간 내 있는지 체크
+-- TODO ..?
+있으면
+급여 
+1) 해당 근태기간에 하루라도 근무시 통상임금 100%지급하지만 일할계산됨
+   적용직군 : 계약직(상무보), 정규직(사무), 정규직(기술), 계약직(사무), 계약직(기술), 계약직(지원)
+
+      SELECT CASE 
+               WHEN description LIKE '계약직(사무)' OR 
+                    description LIKE '계약직(기술)' OR
+                    description LIKE '계약직(재채용)' OR --> 2016-03-31 전용준  이지현씨 요청 추가
+                    description LIKE '%임시%' OR 
+                    description LIKE '%인턴%' 
+                 THEN 'N' 
+                 ELSE 'Y' 
+             END
+             --nvl(s.reference_5, 'N')
+        INTO l_regular_yn
+        FROM is_pe01 p,
+             is_sy02 s
+       WHERE p.regulargb = s.codeid
+         AND s.codetp = 'E108'
+         AND p.emp_id = emp.emp_id;
+         
+         
+급여인데 Y이다.          
+IF g_paycd = '10' AND l_regular_yn = 'Y' THEN
+    g_retire_check := FALSE;
+    g_retire       := 'Y';
+ELSIF g_paycd != '10' THEN
+    g_retire_check := TRUE;
+    g_retire       := 'Y';
+ELSE
+    g_retire_check := TRUE;
+    g_retire       := 'N';
+END IF;
+
+-- TODO 해당 어떤 역할인지 추후 파악
+l_regular_yn
+g_retire_check
+g_retire
+
+
