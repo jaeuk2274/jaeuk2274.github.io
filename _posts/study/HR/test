@@ -833,3 +833,366 @@ bvk_payroll_calculate2 를 쓴다 확인 필요 (2) , 1 아니고 2 붙었다 �
                                                                     p_date_from2 => g_duty_from_30,
                                                                     p_date_to2   => g_duty_to_30);
     END IF;
+
+
+
+  SELECT COUNT(DISTINCT v$date)
+    INTO l_cnt
+    FROM (SELECT r.v$date,
+                 d.dutydat,
+                 p.*,
+                 CASE
+                   WHEN v$gubun = 'Y' OR '01' = CASE p_paycd
+                                                  WHEN '10'
+                                                    THEN NVL(c.type, '@#$@#%')
+                                                  ELSE
+                                                    nvl(c.attribute03, '@#$@#%')
+                                                    /*CASE p_paycd
+                                                      WHEN '30'
+                                                        THEN '02'
+                                                      ELSE
+                                                        nvl(c.attribute03, '@#$@#%')
+                                                    END*/
+                                                  END THEN
+                     'Y'
+                   ELSE
+                     'N'
+                 END v$flag
+            FROM (SELECT *
+                      FROM is_py60
+                     WHERE v$date BETWEEN nvl(p_date_from2, p_date_from) AND nvl(p_date_to2, p_date_to)) r,
+/*                 (SELECT nvl(p_date_from2, p_date_from) + LEVEL - 1 v$date
+                    FROM dual
+                  CONNECT BY LEVEL <= nvl(p_date_to2, p_date_to) - nvl(p_date_from2, p_date_from) + 1) r,*/
+                 (SELECT p.emp_id,
+                         p.baldate,
+                         p.bal_section,
+                         p.balgb,
+                         g.description balgb_disp,
+                         --p.baldate_from,
+                         -- 2019.07.23 서혁진 : 김동원 요청 정직자는 1달 단위로 지급을 안하도록 수정
+                         CASE WHEN p.BALGB in ('I16','I17','I18') THEN IS_MONTH_COMMON.month_from(p.baldate_from) ELSE p.baldate_from END baldate_from,
+                         --p.baldate_to,
+                         nvl(CASE WHEN p.baldate_to = to_date('99991231', 'RRRRMMDD') THEN NULL
+                                  WHEN p.BALGB = 'I16' THEN add_months(IS_MONTH_COMMON.month_from(p.baldate_from),1)-1
+                                  WHEN p.BALGB = 'I17' THEN add_months(IS_MONTH_COMMON.month_from(p.baldate_from),2)-1
+                                  WHEN p.BALGB = 'I18' THEN add_months(IS_MONTH_COMMON.month_from(p.baldate_from),3)-1
+                                  ELSE p.baldate_to END,
+                             (SELECT MIN(baldate_from) - 1
+                                FROM is_pe31
+                               WHERE emp_id = p.emp_id
+                                 AND org_id = p.org_id
+                                 AND baldate_from > p.baldate_from
+                                 AND balgb = 'G08')) baldate_to,
+                         p.description,
+                         NVL(g.reference_5, 'N') v$gubun
+                    FROM is_pe31 p,
+                         is_sy02 g
+                   WHERE 1 = 1
+                     AND SUBSTR(balgb, 1, 1) IN ('G', 'I')
+                     --AND balgb NOT IN ('I01','I11' ,'I13', 'I14','I15','I18',DECODE(p_paycd,'74','@#','I16'),DECODE(p_paycd,'74','@#','I17'),DECODE(p_paycd,'74','@#','I18')) /* 2016-01-04 전용준 I01,I11 추가 2019.08.22 서혁진 : 경영성과금2 paycd = 74 이면 정직뺀다 */
+                     AND balgb NOT IN ('I01','I11' ,'I13', 'I14','I15','I18',DECODE(p_paycd,'74','@#','21','@#','I16'),DECODE(p_paycd,'74','@#','21','@#','I17'),DECODE(p_paycd,'74','@#','21','@#','I18')) /* 2016-01-04 전용준 I01,I11 추가 2019.08.22 서혁진 : 경영성과금2 paycd = 74 이면 정직뺀다 2019.10.22 서혁진 : 기본상여 paycd = 21 도 정직뺀다*/
+                     AND balgb != 'G08'
+                     AND p.confirm ='Y'
+                     AND balgb != CASE p_paycd
+                                    WHEN '30'
+                                      THEN 'G13'
+                                    ELSE
+                                      '@#'
+                                  END
+                     AND p.balgb = g.codeid
+                     AND g.codetp = 'E111'
+
+                   UNION ALL
+
+                  SELECT p.emp_id,
+                         --> 2015-11-18 전용준 신청일 시작일과 같지는 않음
+                         --d.request_date  baldate,
+                         d.date_from baldate,
+                         --<===================================================
+                         NULL            bal_section,
+                         --d.description   bal_section_disp,
+                         --> 2015-11-18 전용준 출산후휴가(다태아) 추가
+                         --'H7'            balgb,
+                         CASE WHEN d.dutycd IN ('H12') THEN 'H12'
+                              ELSE 'H7'
+                         END            balgb,
+                         --<========================================================
+                         d.description   balgb_disp,
+                         d.date_from     baldate_from,
+                         d.date_to       baldate_to,
+                         d.description,
+                         --p.igentdat,
+                         --p.retdat,
+                         'Y'             v$gubun
+                    FROM is_di01 d,
+                         is_pe01 p
+                   WHERE d.emp_id = p_emp_id
+                     --> 2015-11-18 전용준 출산후휴가(다태아) 추가
+                     --AND d.dutycd IN ('H7', 'H8')
+                     AND d.dutycd IN ('H7', 'H8','H12')
+                     --<=====================================================
+                     AND d.emp_id = p.emp_id
+                     AND nvl(d.confirm, 'N') = 'Y'
+                     ) p,
+                 is_di03 d,
+                 is_dc05 c,
+                 is_pe01 e
+           WHERE 1 = 1
+             --AND p.emp_id = e.emp_id
+             AND c.dutycd(+) = d.attendcd
+             AND c.org_id(+) = d.org_id
+             AND v$date BETWEEN p.baldate_from(+) AND nvl(p.baldate_to(+), v$date)
+             AND v$date BETWEEN igentdat AND nvl(retdat, v$date)
+             AND v$date = d.dutydat(+)
+             AND c.dutycd(+) != CASE WHEN p_paycd = '30' THEN 'M9' ELSE '@#$' END
+             AND e.emp_id    = p_emp_id
+             AND d.emp_id(+) = p_emp_id
+             AND p.emp_id(+) = p_emp_id) r
+   WHERE r.v$flag = 'Y';
+
+
+
+
+    SELECT nvl(COUNT(DISTINCT v$date), 0) 
+      INTO l_cnt2
+      FROM (SELECT t1.*
+                 ,v$period2 v$period3
+              FROM (
+                    SELECT  r.v$date,
+                               d.dutydat,
+                               p.*,
+                               CASE
+                                 WHEN v$gubun = 'Y' OR '01' = CASE p_paycd
+                                                                WHEN '10'
+                                                                  THEN NVL(c.type, '@#$@#%')
+                                                                ELSE
+                                                                  nvl(c.attribute03, '@#$@#%')
+                                                                  /*CASE p_paycd
+                                                                    WHEN '30'
+                                                                      THEN '02'
+                                                                    ELSE
+                                                                      nvl(c.attribute03, '@#$@#%')
+                                                                  END*/
+                                                                END THEN
+                                   'Y'
+                                 ELSE
+                                   'N'
+                               END v$flag,                  
+                               v$date - MIN(baldate_from) OVER(PARTITION BY e.emp_id) + 1 v$period,
+                               v$date - baldate_from + 1 v$period2
+                      FROM (SELECT *
+                              FROM is_py60
+                             WHERE v$date BETWEEN nvl(p_date_from2, p_date_from) AND nvl(p_date_to2, p_date_to)) r
+                          ,(SELECT p.emp_id,
+                                       p.baldate,
+                                       p.bal_section,
+                                       p.balgb,
+                                       g.description balgb_disp,
+                                       p.baldate_from,
+                                       --p.baldate_to,
+                                       nvl(CASE WHEN p.baldate_to = to_date('99991231', 'RRRRMMDD') THEN NULL ELSE p.baldate_to END,
+                                           (SELECT MIN(baldate_from) - 1
+                                              FROM is_pe31
+                                             WHERE emp_id = p.emp_id
+                                               AND baldate_from > p.baldate_from
+                                               AND balgb = 'G08')) baldate_to,
+                                       p.description,
+                                       NVL(g.reference_5, 'N') v$gubun
+                                  FROM is_pe31 p,
+                                       is_sy02 g
+                                 WHERE 1 = 1
+                                   AND SUBSTR(balgb, 1, 1) IN ('G', 'I')
+                                   AND balgb NOT IN ('I01','I11' ,'I13', 'I14', 'I15', 'I18', 'G11')/* 2016-01-04 전용준 I01,I11 추가 */
+                                   AND balgb != 'G08'
+                                   AND p.confirm ='Y'
+                                   AND balgb != CASE p_paycd
+                                                  WHEN '30'
+                                                    THEN 'G13'
+                                                  ELSE
+                                                    '@#'
+                                                END
+                                   AND p.balgb = g.codeid
+                                   AND g.codetp = 'E111'
+                           ) p,
+                           is_di03 d,
+                           is_dc05 c,
+                           is_pe01 e               
+                     WHERE 1 = 1
+                       --AND p.emp_id = e.emp_id
+                       AND c.dutycd(+) = d.attendcd
+                       AND c.org_id(+) = d.org_id
+                       AND v$date BETWEEN p.baldate_from(+) AND nvl(p.baldate_to(+), v$date)
+                       AND v$date BETWEEN igentdat AND nvl(retdat, v$date)
+                       AND v$date = d.dutydat(+)
+                       AND c.dutycd(+) != CASE WHEN p_paycd = '30' THEN 'M9' ELSE '@#$' END
+                       AND e.emp_id    = p_emp_id
+                       AND d.emp_id(+) = p_emp_id
+                       AND p.emp_id(+) = p_emp_id 
+                     ) t1   
+            UNION ALL
+            SELECT t2.*
+                  ,row_number() OVER(ORDER BY  t2.v$date) v$period3
+              FROM (
+                    SELECT r.v$date,
+                           d.dutydat,
+                           p.*,
+                           CASE
+                             WHEN v$gubun = 'Y' OR '01' = CASE p_paycd
+                                                            WHEN '10'
+                                                              THEN NVL(c.type, '@#$@#%')
+                                                            ELSE
+                                                              nvl(c.attribute03, '@#$@#%')
+                                                              /*CASE p_paycd
+                                                                WHEN '30'
+                                                                  THEN '02'
+                                                                ELSE
+                                                                  nvl(c.attribute03, '@#$@#%')
+                                                              END*/
+                                                            END THEN
+                               'Y'
+                             ELSE
+                               'N'
+                           END v$flag,                  
+                           v$date - MIN(baldate_from) OVER(PARTITION BY e.emp_id) + 1 v$period,
+                           v$date - baldate_from + 1 v$period2
+                      FROM (SELECT *
+                              FROM is_py60
+                             --WHERE v$date BETWEEN add_months(nvl(p_date_to2, p_date_to),-6) AND nvl(p_date_to2, p_date_to)) r
+                             WHERE v$date BETWEEN add_months(nvl(p_date_to2, p_date_to),-12) AND nvl(p_date_to2, p_date_to)) r
+                          ,(SELECT p.emp_id,
+                                   --> 2015-11-18 전용준 신청일 시작일과 같지는 않음
+                                   --d.request_date  baldate,
+                                   --d.date_from baldate,
+                                   (SELECT MIN(t.date_from)
+                                      FROM is_di01 t
+                                     WHERE 1=1
+                                       AND t.emp_id = p.emp_id
+                                       AND t.dutycd IN ('H7', 'H8', 'H12')
+                                       AND nvl(t.confirm, 'N') = 'Y'
+                                       AND t.date_from BETWEEN add_months(d.date_to,-3) AND d.date_to
+                                  ) baldate,
+                                   --<========================================================
+                                   NULL            bal_section,
+                                   --d.description   bal_section_disp,
+                                   --> 2015-11-18 전용준 출산후휴가(다태아) 추가
+                                   --'H7'            balgb,
+                                   CASE WHEN d.dutycd IN ('H12') THEN 'H12'
+                                        ELSE 'H7'
+                                   END            balgb,
+                                   --<========================================================
+                                   d.description   balgb_disp,
+                                   d.date_from     baldate_from,
+                                   d.date_to       baldate_to,
+                                   d.description,
+                                   --p.igentdat,
+                                   --p.retdat,
+                                   'Y'             v$gubun
+                              FROM is_di01 d,
+                                   is_pe01 p
+                             WHERE d.emp_id = p_emp_id
+                               --> 2015-11-18 전용준 출산후휴가(다태아) 추가
+                               --AND d.dutycd IN ('H7', 'H8')
+                               AND d.dutycd IN ('H7', 'H8', 'H12')
+                               --<==============================
+                               --AND CASE WHEN p_paycd = '10' THEN d.dutycd ELSE '@#$@' END IN ('H7', 'H8')
+                               AND d.emp_id = p.emp_id
+                               AND nvl(d.confirm, 'N') = 'Y'
+                               ) p,
+                           is_di03 d,
+                           is_dc05 c,
+                           is_pe01 e
+                     WHERE 1 = 1
+                       AND c.dutycd(+) = d.attendcd
+                       AND c.org_id(+) = d.org_id
+                       AND v$date BETWEEN p.baldate_from(+) AND nvl(p.baldate_to(+), v$date)
+                       AND v$date BETWEEN igentdat AND nvl(retdat, v$date)
+                       AND v$date = d.dutydat(+)
+                       AND c.dutycd(+) != CASE WHEN p_paycd = '30' THEN 'M9' ELSE '@#$' END
+                       AND e.emp_id    =  p_emp_id
+                       AND d.emp_id(+) =  p_emp_id
+                       AND p.emp_id(+) =  p_emp_id 
+                     ) t2
+               WHERE 1=1
+                 AND t2.v$flag = 'Y'
+                   
+            ) t                   
+      WHERE 1=1      
+        AND v$flag = 'Y' 
+        AND v$date BETWEEN nvl(p_date_from2, p_date_from) AND nvl(p_date_to2, p_date_to)
+        AND balgb IN ('G11', 'H7','H12')
+        AND CASE WHEN p_emp_id = 199 THEN v$period2
+                 WHEN p_emp_id = 4461 THEN v$period2
+                 ELSE v$period3 END <= CASE WHEN balgb IN ('H12') THEN 75 
+                                                                  ELSE 60
+                                       END ; 
+                                       
+하...       
+
+
+
+
+SELECT *
+FROM IS_SY02
+WHERE CODETP IN ('E111')
+AND CODEID IN ('I01','I11' ,'I13', 'I14', 'I15', 'I18', 'G11', 'G08');
+
+E111	G08	복직
+E111	G11	육아휴직
+E111	I01	견책
+E111	I11	경고 (사장 경고)
+E111	I13	감봉 1개월
+E111	I14	감봉 2개월
+E111	I15	감봉 3개월
+E111	I18	징계해제
+
+
+AND SUBSTR(balgb, 1, 1) IN ('G', 'I')
+AND balgb NOT IN ('I01','I11' ,'I13', 'I14', 'I15', 'I18', 'G11')/* 2016-01-04 전용준 I01,I11 추가 */
+AND balgb != 'G08'
+AND balgb != CASE p_paycd
+  WHEN '30'
+    THEN 'G13'
+  ELSE
+    '@#'
+END
+이 의미없는 건 .. 정말..
+ 
+ 
+ 
+일근태에 아닌것.
+
+휴가테이블
+
+근태코드
+H7	출산전후휴가	02	AL
+H8	산전후휴가(61일부터)	01	AL
+M9	공상휴업		AL
+H12	출산전후휴가(다태아)	02	AL
+
+
+(SELECT MIN(t.date_from)
+  FROM is_di01 t
+ WHERE 1=1
+   AND t.emp_id = p.emp_id
+   AND t.dutycd IN ('H7', 'H8', 'H12')
+   AND nvl(t.confirm, 'N') = 'Y'
+   AND t.date_from BETWEEN add_months(d.date_to,-3) AND d.date_to
+) baldate,
+
+
+시작일자부터 -3개월
+
+...
+
+RETURN l_cnt - l_cnt2;
+
+
+
+
+
+
+
+
+
+
