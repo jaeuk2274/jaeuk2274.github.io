@@ -300,14 +300,20 @@ ELSIF g_paycd IN ('69') THEN
                 'AND PAYDIV <> ''30''' ||
                 'AND (RETDAT IS NULL OR RETDAT > ''' || l_7_day ||
                 
-해당 두개합쳐도 무방 합침.
+-- TODO 해당 두개합쳐도 무방 합침.
 
+-- TODO 70 현재 존재안함.
 ELSIF g_paycd IN ('50', '70') THEN
 --임원성과연봉,임원활동비
 l_curs_str := l_curs_str || 'WHERE  IGENTDAT <= ''' || g_pay_date_to || '''' ||
             'AND  (RETDAT IS NULL OR RETDAT >= ''' || g_paydat ||
             ''')' || 'AND PAYDIV = ''30'''
              ;
+
+1. 급여형태 연봉제(임원)이 아니고
+2. 입사일자가 급여기간(20.01.15) 전
+3. 퇴사일자가 g_paydat(20.01.01) 이번달 이상이면.
+
 
 
 
