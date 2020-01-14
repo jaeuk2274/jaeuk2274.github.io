@@ -120,7 +120,7 @@ write_log('계산조건 - 세액계산여부 : '||p_tax_cal);
 write_log('계산조건 - 세액감액율 : '||nvl(p_tax_subrate,0)||'%');
 
 
-1. 통상시급을 구하기 위한 소정 근무시간 Setting
+### 1. 통상시급을 구하기 위한 소정 근무시간 Setting
 g_reg_time := to_number(is_duty_common.common_value('REGULAR_WORK_TIME')); 
 
     select *
@@ -133,7 +133,7 @@ g_reg_time := to_number(is_duty_common.common_value('REGULAR_WORK_TIME'));
 81	GUNTAE	REGULAR_WORK_TIME	184	소정근로시간
 
 
-2.    get_date_period; --급여계산기간  
+### 2. get_date_period; --급여계산기간  
 
 SELECT VALUE$
 INTO l_date_ftemp
@@ -156,13 +156,98 @@ AND ORG_ID = 81;
 
 
 IF (l_date_ftemp IS NOT NULL) THEN
-l_date_fm := SUBSTR(l_date_ftemp, 1, INSTR(l_date_ftemp, ',') - 1);
-l_date_fd := SUBSTR(l_date_ftemp, INSTR(l_date_ftemp, ',') + 1);
-IF TO_CHAR(LAST_DAY(ADD_MONTHS(to_date(p_dutymth, 'yyyymm'), l_date_fm)), 'DD') <
-   l_date_fd THEN
+l_date_fm := SUBSTR(l_date_ftemp, 1, INSTR(l_date_ftemp, ',') - 1); -- -1
+l_date_fd := SUBSTR(l_date_ftemp, INSTR(l_date_ftemp, ',') + 1); -- 16
+-- (귀속년월)저번달 마지막날 < 16
+IF TO_CHAR(LAST_DAY(ADD_MONTHS(to_date(p_dutymth, 'yyyymm'), l_date_fm)), 'DD') < l_date_fd 
+THEN
   p_date_from := LAST_DAY(ADD_MONTHS(to_date(p_dutymth, 'yyyymm'), l_date_fm));
 ELSE
-  p_date_from := TO_DATE(TO_CHAR(ADD_MONTHS(to_date(p_dutymth, 'yyyymm'), l_date_fm), 'YYYYMM') ||
-                         LTRIM(TO_CHAR(l_date_fd, '00')), 'YYYYMMDD');
+  p_date_from := TO_DATE(TO_CHAR(ADD_MONTHS(to_date(p_dutymth, 'yyyymm'), l_date_fm), 'YYYYMM') || 
+                LTRIM(TO_CHAR(l_date_fd, '00')), 'YYYYMMDD'); -- (귀속년월)저번달 || 16
 END IF;
+
+IF (l_date_ttemp IS NOT NULL) THEN
+l_date_tm := SUBSTR(l_date_ttemp, 1, INSTR(l_date_ttemp, ',') - 1); -- 0
+l_date_td := SUBSTR(l_date_ttemp, INSTR(l_date_ttemp, ',') + 1); -- 15
+-- (귀속년월)현재달 마지막날 < 15
+IF TO_CHAR(LAST_DAY(ADD_MONTHS(to_date(p_dutymth, 'yyyymm'), l_date_tm)), 'DD') < l_date_td 
+THEN
+  p_date_to := LAST_DAY(ADD_MONTHS(to_date(p_dutymth, 'yyyymm'), l_date_tm));
+ELSE
+  p_date_to := TO_DATE(TO_CHAR(ADD_MONTHS(to_date(p_dutymth, 'yyyymm'), l_date_tm), 'YYYYMM') ||
+               LTRIM(TO_CHAR(l_date_td, '00')), 'YYYYMMDD'); (귀속년월) || 15
+END IF;
+
+근태
+저번달 16 ~ 이번달 15일 기준.
+
+전월 급여기간도 구해놓는다.
+g_prev_paymth := to_char(add_months(to_date(g_paymth,'rrrrmm'),-1),'RRRRMM');
+is_month_common.bonus_period(g_prev_paymth, g_prev_pay_date_from, g_prev_pay_date_to);
+
+g_prev_pay_date_from
+g_prev_pay_date_to
+
+
+  -- 일할계산 기준일
+  g_day_per_monthly        NUMBER := TO_NUMBER(IS_PAY_COMMON.COMMON_VALUE('DAY_PER_MONTHLY')); -- 30
+
+SELECT VALUE$
+INTO l_value
+FROM IS_SY03
+WHERE NAME = upper('DAY_PER_MONTHLY')
+AND TYPE = 'PAY'
+AND ORG_ID = is_func.org_id;
+
+81	PAY	DAY_PER_MONTHLY	30	일할계산 기준일
+
+
+### 3. get_fixed_reg_type
+
+CURSOR CS_REG_TYPE IS
+SELECT REG_TYPE, MASTER_COLUMN
+FROM IS_PY33
+WHERE ENABLED = 'Y'
+AND ORG_ID = g_org_id
+ORDER BY PRECEDE_NUM;
+
+개인별	EMP_ID
+직책별	JIKCKCD
+호칭별	JIKGUBCD
+
+1	개인별	EMP_ID		Y	IS_PE01_V PER	PER.EMPCD	사번	        0.8	    PER.HNAME	    성명	        1.5	PER.DEPTCD_DISP	부서	2				TO_CHAR(PER.EMP_ID)			5	WHERE 1=1 ORDER BY PER.EMPCD
+2	직책별	JIKCKCD		Y	IS_SY02 S	    S.CODEID	직책코드	  0.8	S.DESCRIPTION	직책코드명	    1.5										1	WHERE S.CODETP = 'E102' ORDER BY S.CODETP
+3	호칭별	JIKGUBCD	Y	IS_SY02 S	    S.CODEID	호칭코드	  0.8	S.DESCRIPTION	호칭명	        1.5										1	WHERE S.CODETP = 'E104' ORDER BY S.CODETP
+
+FOR C IN CS_REG_TYPE LOOP
+  l_array := l_array + 1;
+  reg_type(l_array).REG_TYPE := C.REG_TYPE;
+  reg_type(l_array).MASTER_COLUMN := C.MASTER_COLUMN;
+END LOOP;
+
+
+### 4. 
+    curs_str := get_curs_str(p_paymth
+                            ,p_compycd
+                            ,p_deptcd
+                            ,p_include_subdept
+                            ,p_jikjgcd
+                            ,p_jikgubcd
+                            ,p_regulargb
+                            ,p_paydiv
+                            ,p_emp_id);
+                            
+                            
+l_7_day    DATE := last_day(add_months(to_date(g_paymth || '05', 'YYYYMMDD'), -1));
+-> 바꿔도 될 거 같음. 전달 마지막날짜만 구함.
+l_7_day    DATE := last_day(add_months(to_date(g_paymth, 'YYYYMM'), -1));
+전달 마지막 날짜. 
+
+
+
+
+
+
+
 
