@@ -314,13 +314,336 @@ l_curs_str := l_curs_str || 'WHERE  IGENTDAT <= ''' || g_pay_date_to || '''' ||
 2. 입사일자가 급여기간(20.01.15) 전
 3. 퇴사일자가 g_paydat(20.01.01) 이번달 이상이면.
 
+기타
+    ELSE
+      l_curs_str := l_curs_str || 'WHERE  (IGENTDAT <= ''' || g_pay_date_to || '''' ||
+                    'OR (paydiv = ''30'' AND TO_CHAR(IGENTDAT,''YYYYMM'')=''' ||
+                    g_paymth || ''' ' || '))' ||
+                    'AND    (RETDAT IS NULL OR (RETDAT BETWEEN ''' ||
+                    g_pay_date_from || ''' AND ''' || g_pay_date_to ||
+                    ''' ) OR (RETDAT > ''' || g_pay_date_to || ''') )';
+    END IF;
+    
+나머지 전부 (급여.. 경영성과금.. 등)    
+1. 입사일자가 급여기간(20.01.15) 전  이거나 연봉제(임원)인데 + 입사월이 귀속년월일때. 
+2. 퇴직일자 없거나, 
+또는 퇴직일자 BETWEEN 19.12.16 ~ 20.01.15 사이인경우 
+또는 20.01.15 이후 퇴직이거나.
+
+-> 퇴직일자가 19.12.16 이후 
+
+만약 
+
+REGULARGB - 사원그룹   
+(파견직 제외) NOT IN (''299'',''61'') // 파견직, 용역직
+파견간데서 월급줌.
+
+E108	11	임원	임원	1	Y
+E108	12	상임고문			N
+E108	121	전문직	테스트		Y
+E108	13	비상임고문			N
+E108	14	연봉계약직(임원)	임원	2	Y
+E108	141	비상근연봉계약직(상무보)	직원	3	Y
+E108	15	계약직(상무보)	계약직	4	Y
+E108	21	연봉제	직원	5	Y
+E108	22	월급제	직원	7	Y
+E108	23	별정직	직원	6	Y
+E108	24	P직군	직원	5	Y
+E108	25	E직군	직원	6	Y
+E108	299	파견직	계약직	14	Y
+E108	31	계약직(기술)	계약직	8	Y
+E108	32	계약직(사무)	계약직	9	Y
+E108	33	계약직(기술)	계약직	10	N
+E108	34	계약직(지원)	계약직	11	N
+E108	35	계약직(재채용)	계약직	8	Y
+E108	41	촉탁직		15	Y
+E108	51	임시직	임시직	12	Y
+E108	52	인턴(기간제)	임시직	10	Y
+E108	53	시간제근로자	임시직	13	Y
+E108	54	인턴(사무)	임시직	10	Y
+E108	55	인턴(기술)	임시직	10	Y
+E108	61	용역직			N
+
+JIKGUBCD - 역할등급(E104)  
+E104	01	대표이사			Y
+E104	02	부사장			Y
+E104	03	전무			Y
+E104	04	상무 			Y
+E104	05	전무이사			Y
+E104	06	상무이사			Y
+E104	07	사장보좌역			Y
+E104	08	상무보			Y
+E104	09	고문			Y
+E104	10	임원			Y
+E104	11	Associates			N
+E104	12	Managerial			Y
+E104	13	Professional			Y
+E104	21	P4		7	Y
+E104	22	P3		8	Y
+E104	23	P2		9	Y
+E104	24	P1		10	Y
+E104	25	이사보			N
+E104	26	P5	2015-03-16 신규생성	6	Y
+E104	27	P6	2015-03-16 신규생성	5	Y
+E104	28	P7	2015-03-16 신규생성	4	Y
+E104	29	P8	2015-03-16 신규생성	3	Y
+E104	30	P9	2015-03-16 신규생성	2	Y
+E104	31	P11	2015-03-17 신규생성	1	Y
+E104	32	E7	 2017-04-01 생성 	11	Y
+E104	33	E6	 2017-04-01 생성 	12	Y
+E104	34	E5	 2017-04-01 생성 	13	Y
+E104	35	E4	 2017-04-01 생성 	14	Y
+E104	36	E3	 2017-04-01 생성 	15	Y
+E104	37	E2A	 2017-04-01 생성 	16	Y
+E104	38	E2B	 2017-04-01 생성 	17	Y
+E104	39	E1A	 2017-04-01 생성 	18	Y
+E104	40	E1B	 2017-04-01 생성 	19	Y
+E104	41	P12	2018-02-21 생성	1	Y
+E104	42	E2	2018-03-26 생성	20	Y
+E104	43	E1	2018-03-26 생성	21	Y
+E104	44	P10	2018-12-28 생성	1	Y
+
+
+JIKJGCD 직무코드(E105)
+너무많아서 Y인것만
+E105	110	IT기획직		1	Y
+E105	111	PJT기술직		1	Y
+E105	112	PJT리더		1	Y
+E105	113	PJT마케팅기획직		1	Y
+E105	114	PJT지원직		1	Y
+E105	115	QSS Master		1	Y
+E105	116	간호직		1	Y
+E105	117	감사직		1	Y
+E105	118	경영기획직		1	Y
+E105	119	계약관리직		1	Y
+E105	120	계약직		1	Y
+E105	121	금형설계관리직		1	Y
+E105	122	기계정비직		1	Y
+E105	123	소장	2018.12.27 기술연구소장→소장 변경	1	Y
+E105	124	내화물제조직		1	Y
+E105	125	노무기획직		1	Y
+E105	126	노무지원직		1	Y
+E105	127	노재기술직		1	Y
+E105	128	대표이사 사장		1	Y
+E105	129	라임기술직		1	Y
+E105	130	라임제조직		1	Y
+E105	131	마그네시아생산직		1	Y
+E105	132	마케팅기획직		1	Y
+E105	133	무보직		1	Y
+E105	134	방재기획직		1	Y
+E105	135	법무직		1	Y
+E105	136	별정직		1	Y
+E105	137	본부장		1	Y
+E105	138	비서직		1	Y
+E105	139	사외이사		1	Y
+E105	140	상임감사		1	Y
+E105	141	생산기술직		1	Y
+E105	142	생산지원직		1	Y
+E105	143	설비기술직		1	Y
+E105	144	설비직		1	Y
+E105	145	실장		1	Y
+E105	146	안전 Master		1	Y
+E105	147	안전환경기술직		1	Y
+E105	148	안전환경기획직		1	Y
+E105	149	안전환경직		1	Y
+E105	150	연구개발직		1	Y
+E105	151	연구기술직		1	Y
+E105	152	연구기획직		1	Y
+E105	153	연구지원직		1	Y
+E105	154	원료직		1	Y
+E105	155	유틸리티운전직		1	Y
+E105	156	음극재제조직		1	Y
+E105	157	인사기획직		1	Y
+E105	158	인사지원직		1	Y
+E105	159	임시직		1	Y
+E105	160	자금직		1	Y
+E105	161	자문교수		1	Y
+E105	162	자문역		1	Y
+E105	163	자재직		1	Y
+E105	164	전기정비직		1	Y
+E105	165	전문임원		1	Y
+E105	166	정비기술직		1	Y
+E105	167	제품출하직		1	Y
+E105	168	제품판매지원직		1	Y
+E105	169	제품판매직		1	Y
+E105	170	총괄		1	Y
+E105	172	품질검사직		1	Y
+E105	173	품질기술직		1	Y
+E105	174	품질지원직		1	Y
+E105	175	해외법인장		1	Y
+E105	176	행정기획직		1	Y
+E105	177	행정지원직		1	Y
+E105	178	혁신기획직		1	Y
+E105	179	현장대리인		1	Y
+E105	180	화성기술직		1	Y
+E105	181	화성정제직		1	Y
+E105	182	화성품판매직		1	Y
+E105	183	환경 Master		1	Y
+E105	184	회계직		1	Y
+E105	185	품질 Master		1	Y
+E105	186	품질기획직	2017.05.10 생성	1	Y
+E105	187	축로직(A)	2017.05.12 생성	1	Y
+E105	188	축로직(B)	2017.05.12 생성	1	Y
+E105	189	시설관리직	2017.05.30 생셩	1	Y
+E105	190	보좌역	2017.06.13 생성	1	Y
+E105	191	공사감독직	2017.09.21 생성	1	Y
+E105	192	경영지원직	2017.09.28 생성	1	Y
+E105	193	사장	20180221생성	1	Y
+E105	194	대표이사	20180221생성	1	Y
+E105	195	자재직(A)	20180806 생성	1	Y
+E105	196	자재직(B)	20180806 생성	1	Y
+E105	197	전구체제조직	2019-03-28생성	1	Y
+E105	198	활물질제조직	2019-03-28 생	1	Y
+E105	199	통역직	2019-06-27 생성	1	Y
+E105	200	교육지원직	2019-10-31 생성		Y
+E105	201	기술컨설턴트	2019-10-31 생성	1	Y
+
+
+COMPYCD 회사코드
+
+
+부서, 사번 등
+존재하면 해당 그것만 돌림.
 
 
 
 
+## 5.
+/* 수당기준/공제기준  
+
+    -- 주민세관련 설정
+    IS_PAY_COMMON.CRIT_VALUE ( 'SUBTR'
+                             , 'TAX_RATE'
+                             , 'RESTAX'
+                             , g_restax_crit
+                             , g_restax );
+
+  -- 수당/공제기준 값 가져오기 [리턴값 : 처리기준(율,금액), 금액/율]
+  PROCEDURE crit_value(p_as_class IN VARCHAR2
+                      ,p_type     IN VARCHAR2
+                      ,p_name     IN VARCHAR2
+                      ,p_crit     OUT VARCHAR2
+                      ,p_amount   OUT NUMBER) IS
+                      
+SELECT CRIT, AMOUNT
+--    INTO p_crit, p_amount
+FROM IS_PY32
+WHERE AS_CLASS = 'SUBTR'
+AND TYPE = 'TAX_RATE'
+AND NAME = 'RESTAX';
+
+RATE	10
+81	TAX_RATE	RESTAX	10	주민세 요율
+
+-- 건강보험관련 설정
+IS_PAY_COMMON.CRIT_VALUE ( 'SUBTR'
+                     , 'FOUR_INSURE'
+                     , 'HEALTH_INSUR_EMP'
+                     , g_health_insur_crit
+                     , g_health_insur );
+                             
+RATE	3.335
+81	FOUR_INSURE	HEALTH_INSUR_EMP	3.335	건강보험 요율 [직원]
 
 
+   IS_PAY_COMMON.CRIT_VALUE ( 'SUBTR'
+                             , 'FOUR_INSURE'
+                             , 'HEALTH_OLDMAN_INSUR_EMP'
+                             , g_health_old_insur_crit
+                             , g_health_old_insur );
+                             
+81	FOUR_INSURE	HEALTH_OLDMAN_INSUR_EMP	10.25	장기요양보험 요율 [직원]
 
+
+3개다 안씀/데이터없음 다른데서 쓰는거같음..
+    -- 중식비
+    IS_PAY_COMMON.CRIT_VALUE ( 'ALLOW'
+                             , 'MEAL_PAY'
+                             , '9A_MONEY'
+                             , g_pay_9a_money_crit
+                             , g_pay_9a_money );
+
+    -- 현장수당
+    IS_PAY_COMMON.CRIT_VALUE ( 'ALLOW'
+                             , 'MEAL_PAY'
+                             , '42_MONEY'
+                             , g_pay_42_money_crit
+                             , g_pay_42_money );
+    -- 노조비
+    IS_PAY_COMMON.CRIT_VALUE ( 'SUBTR'
+                             , 'UNION_CST'
+                             , 'UNION_RATE'
+                             , g_union_rate_crit
+                             , g_union_rate );
+                             
+## 6. set_calc_information
+                             
+id 따고
+
+ g_cal_id := is_cal_id.nextval;
+
+    l_record.org_id            := is_func.org_id;
+    l_record.cal_id            := g_cal_id;
+    l_record.paydat            := p_paydat;
+    l_record.paymth            := p_paymth;
+    l_record.paycd             := p_paycd;
+    l_record.attribute01       := p_compycd;
+    l_record.attribute02       := p_deptcd;
+    l_record.attribute03       := p_include_subdept;
+    l_record.attribute04       := p_jikjgcd;
+    l_record.attribute05       := p_jikgubcd;
+    l_record.attribute06       := p_regulargb;
+    l_record.attribute07       := p_paydiv;
+    l_record.attribute08       := p_emp_id;
+    l_record.attribute09       := p_pay_rate;
+    l_record.attribute10       := p_pay_amount;
+    l_record.attribute11       := p_tax_from;
+    l_record.attribute12       := p_tax_to;
+    l_record.attribute13       := to_char(p_duty_from, 'RRRRMMDD');
+    l_record.attribute14       := to_char(p_duty_to, 'RRRRMMDD');
+    l_record.attribute15       := p_tax_cal;
+    l_record.attribute16       := p_tax_subrate;
+
+    l_record.last_update_date  := SYSDATE;
+    l_record.last_updated_by   := -1;
+    l_record.creation_date     := SYSDATE;
+    l_record.created_by        := -1;
+    l_record.last_update_login := NULL;
+
+    INSERT INTO is_py00 VALUES l_record;
+
+g_quater := to_char(to_date(p_paymth || '01', 'RRRRMMDD'), 'Q');
+분기도 세팅
+
+레퍼런스 2 참고
+급여는 
+SELECT s.reference_2
+--  INTO g_pay_gubun -- 급여 10 은  A
+FROM is_sy02 s
+WHERE s.codetp = 'G101'
+AND s.codeid = '10'
+
+-- 직능급표
+SELECT MAX(jik_month)
+--  INTO g_jik_month
+FROM is_py26
+WHERE jik_month <= '202001'; -- 귀속년월
+
+중식비를 여기서 가져오네.. / 위에거 무쓸모. 
+g_9a_amount := bvk_payroll_calculate.return_value ('001', g_paydat);
+    
+SELECT *
+--   INTO l_value
+FROM is_sy02 s
+WHERE s.codetp = 'G800'; -- 급여수당계산값
+
+G800	003	개인연금(보조금)2019_1	2019_개인연금_1년차_27만원		Y	2019-01-15 오전 10:00:26	1324	2019-01-15 오전 10:00:26	1324	1324	270000
+G800	004	개인연금(보조금)2019_2	2019_개인연금_2년차_25만원		Y	2019-01-15 오전 10:00:26	1324	2019-01-15 오전 10:00:26	1324	1324	250000
+G800	005	개인연금(보조금)2019_3	2019_개인연금_3년차_22만원		Y	2019-01-15 오전 10:00:26	1324	2019-01-15 오전 10:00:26	1324	1324	220000
+G800	006	개인연금(보조금)2019_4	2019_개인연금_4년차_19만원		Y	2019-01-15 오전 10:00:26	1324	2019-01-15 오전 10:00:26	1324	1324	190000
+G800	007	개인연금(보조금)2019_5	2019_개인연금_5년차_17만원		Y	2019-01-15 오전 10:00:26	1324	2019-01-15 오전 10:00:26	1324	1324	170000
+G800	001	중식비	2012_중식비		Y	2012-05-15 오전 10:22:23	552	2012-05-14 오후 5:48:55	552	552	125000
+G800	002	개인연금(보조금)	2012_개인연금		Y	2012-05-14 오후 5:49:44	552	2012-05-14 오후 5:48:55	552	552	55000
 
 
 
