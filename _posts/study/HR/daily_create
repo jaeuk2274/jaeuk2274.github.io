@@ -13,3 +13,19 @@ IS_DC04
 
 is_dc07
 교대근무조 형태 확인
+
+    SELECT d.work_type
+      INTO g_work_type
+      FROM is_dc07 d
+     WHERE d.emp_id = emp.emp_id
+       AND d.dutydat = (SELECT MAX(d.dutydat)
+                          FROM is_dc07 d
+                         WHERE d.emp_id = emp.emp_id
+                           AND d.dutydat <= p_dutydat
+                           
+                           
+                           
+g_work_type - 근무형태
+
+
+                           
