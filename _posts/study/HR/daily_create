@@ -28,10 +28,37 @@ is_dc07
 g_work_type - 근무형태
 
 
-### l_daycd   := is_duty_common.get_daycd(p_dutydat, l_work_time); -- 상주 또는 교대 캘린더                      
+### 
+l_daycd   := is_duty_common.get_daycd(p_dutydat, l_work_time); -- 상주 또는 교대 캘린더    
 
-is_dc15 - 휴일관리
+if substr(p_work_time, 1, 1) = '1' then
+  -- 상주 및 일시상주는 종전의 카렌더 적용
+  l_daycd := get_daycd(p_date);
+else
+  -- 공동코드의 근무시간대를 읽어서 REMARK 에있는 코드를 가지고 온다.
+  begin
+    select remark
+      into l_daycd
+      from is_sy02
+     where codetp = 'D303'
+       and codeid = p_work_time;
+  exception
+    when no_data_found then
+      l_daycd := null;
+  end;
 
+end if;
+
+
+
+
+
+
+
+l_daycd_1 := is_duty_common.get_daycd(p_dutydat);              -- 상주캘린더(국공휴일,휴무일)
+
+is_dc15 - 휴일관리 
+날짜만 봄.
 into 
 l_daycd - 코드 (D, T)
 81	2020-04-01	회사창립일	T
@@ -43,8 +70,7 @@ l_daycd - 코드 (D, T)
 IS_DC12 - 휴일코드관리 (현재일자, D)
 81	H	W	W	W	W	W	H
 
-
-하드코딩..
+하드코딩...
 IF p_date = to_date('20121229', 'RRRRMMDD') THEN
   l_daycd := 'W';
 ELSIF p_date = to_date('20121231', 'RRRRMMDD') THEN
