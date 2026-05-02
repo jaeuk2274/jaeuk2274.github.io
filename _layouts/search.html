@@ -1,4 +1,4 @@
----
+﻿---
 layout: base
 ---
 
@@ -73,20 +73,3 @@ input.gsc-input {
   margin-bottom: 8px !important;
 }
 </style>
-
-<script>
-(function () {
-  function loadGCSE() {
-    var cx = '017637555849097978177:zjwzli1safz';
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://cse.google.com/cse.js?cx=' + cx;
-    document.head.appendChild(script);
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadGCSE);
-  } else {
-    loadGCSE();
-  }
-})();
-</script>
