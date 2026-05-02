@@ -16,9 +16,8 @@ layout: base
 
 <style>
 /* ── Wrapper ── */
-#search-wrapper {
-  margin: 1.5rem 0 2rem;
-}
+#search-wrapper { margin: 1.5rem 0 2rem; }
+
 .gsc-control-cse {
   padding: 0 !important;
   border: none !important;
@@ -26,21 +25,29 @@ layout: base
   font-family: inherit !important;
 }
 
-/* ── Table cell reset: 세로 정렬 통일 ── */
-.gsc-search-box td {
-  padding: 0 !important;
-  vertical-align: middle !important;
-  border: none !important;
+/* ── 바깥 테이블 초기화 ── */
+table.gsc-search-box {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
 }
+table.gsc-search-box > tbody > tr > td {
+  padding: 0 !important;
+  border: none !important;
+  vertical-align: middle !important;
+}
+td.gsc-input    { padding-right: 0 !important; }
+td.gsc-clear-button { display: none !important; }
 
-/* ── Input box ── */
+/* ── 인풋 박스 (테두리 컨테이너) ── */
 .gsc-input-box {
   box-sizing: border-box !important;
-  height: 46px !important;
+  height: 44px !important;
   border: 2px solid #d0d5dd !important;
   border-right: none !important;
   border-radius: 8px 0 0 8px !important;
-  padding: 0 12px !important;
+  padding: 0 !important;
+  margin: 0 !important;
   background: #fff !important;
   transition: border-color .2s, box-shadow .2s !important;
 }
@@ -48,33 +55,54 @@ layout: base
   border-color: #4285f4 !important;
   box-shadow: 0 0 0 3px rgba(66,133,244,.15) !important;
 }
+
+/* ── GCSE 내부 중첩 테이블 (안쪽 구조) ── */
+.gsc-input-box table {
+  height: 40px !important;
+  width: 100% !important;
+  border-spacing: 0 !important;
+  border-collapse: collapse !important;
+}
+.gsc-input-box table td {
+  padding: 0 !important;
+  border: none !important;
+  vertical-align: middle !important;
+}
+.gsib_a { padding: 0 10px !important; }
+.gsib_b { width: 24px !important; padding: 0 4px 0 0 !important; }
+
+/* ── 실제 인풋 ── */
 input.gsc-input {
-  height: 100% !important;
+  height: 40px !important;
   font-size: 15px !important;
   font-family: inherit !important;
   color: #333 !important;
   background: transparent !important;
   border: none !important;
   outline: none !important;
+  box-shadow: none !important;
   padding: 0 !important;
   margin: 0 !important;
-  box-shadow: none !important;
+  width: 100% !important;
 }
 
-/* ── Search button ── */
+/* ── 검색 버튼 ── */
+td.gsc-search-button { vertical-align: middle !important; padding: 0 !important; }
 .gsc-search-button-v2 {
   box-sizing: border-box !important;
-  height: 46px !important;
-  background: #4285f4 !important;
-  border: 2px solid #4285f4 !important;
-  border-radius: 0 8px 8px 0 !important;
-  padding: 0 22px !important;
-  cursor: pointer !important;
-  transition: background .2s, border-color .2s !important;
-  vertical-align: middle !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  height: 44px !important;
+  background: #4285f4 !important;
+  border: 2px solid #4285f4 !important;
+  border-radius: 0 8px 8px 0 !important;
+  padding: 0 20px !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  vertical-align: middle !important;
+  transition: background .2s, border-color .2s !important;
+  line-height: 1 !important;
 }
 .gsc-search-button-v2:hover {
   background: #3367d6 !important;
@@ -87,19 +115,9 @@ input.gsc-input {
   height: 18px !important;
 }
 
-/* ── Results ── */
+/* ── 검색 결과 ── */
 .gs-result .gs-title,
-.gs-result .gs-title b {
-  color: #4285f4 !important;
-}
-.gsc-result-info {
-  color: #888 !important;
-  font-size: 13px !important;
-  padding-left: 0 !important;
-}
-.gsc-above-wrapper-area {
-  border-bottom: 1px solid #eee !important;
-  padding-bottom: 8px !important;
-  margin-bottom: 8px !important;
-}
+.gs-result .gs-title b   { color: #4285f4 !important; }
+.gsc-result-info         { color: #888 !important; font-size: 13px !important; padding-left: 0 !important; }
+.gsc-above-wrapper-area  { border-bottom: 1px solid #eee !important; padding-bottom: 8px !important; margin-bottom: 8px !important; }
 </style>
