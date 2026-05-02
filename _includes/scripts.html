@@ -1,4 +1,4 @@
-{% if site.google_analytics %}
+﻿{% if site.google_analytics %}
 <script>
   window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
   ga('create', '{{ site.google_analytics }}', 'auto');
@@ -38,3 +38,35 @@
   {% endcomment %}
   <!--<![endif]-->
 {% endunless %}
+
+<script>
+(function () {
+  var GCSE_CX = '017637555849097978177:zjwzli1safz';
+
+  function initGCSE() {
+    if (!document.querySelector('.gcse-search')) return;
+    if (!document.querySelector('script[src*="cse.google.com"]')) {
+      var s = document.createElement('script');
+      s.src = 'https://cse.google.com/cse.js?cx=' + GCSE_CX;
+      s.async = true;
+      document.head.appendChild(s);
+    } else if (window.google && window.google.search &&
+               window.google.search.cse && window.google.search.cse.element) {
+      google.search.cse.element.render({
+        div: document.querySelector('.gcse-search'),
+        tag: 'search'
+      });
+    }
+  }
+
+  document.addEventListener('y-push-state-after', function () {
+    setTimeout(initGCSE, 100);
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGCSE);
+  } else {
+    initGCSE();
+  }
+})();
+</script>
