@@ -3,12 +3,90 @@ layout: base
 ---
 
 <article class="page" role="article">
-  <script async src="https://cse.google.com/cse.js?cx=017637555849097978177:zjwzli1safz"></script>
-  <div class="gcse-search"></div>
-  
   <h1 class="page-title hr" style="padding-bottom:1rem">{{ page.title }}</h1>
 
   <div class="markdown-body">
     {{ content }}
   </div>
+
+  <div id="search-wrapper">
+    <div class="gcse-search"></div>
+  </div>
 </article>
+
+<style>
+#search-wrapper {
+  margin: 1.5rem 0 2rem;
+}
+.gsc-control-cse {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+.gsc-input-box {
+  border: 2px solid #dde1e7 !important;
+  border-right: none !important;
+  border-radius: 10px 0 0 10px !important;
+  padding: 2px 8px !important;
+  background: #fff !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+  height: 44px !important;
+}
+.gsc-input-box:focus-within {
+  border-color: #4285f4 !important;
+  box-shadow: 0 0 0 3px rgba(66,133,244,0.12) !important;
+}
+input.gsc-input {
+  font-size: 15px !important;
+  padding: 6px 4px !important;
+  color: #333 !important;
+  background: transparent !important;
+}
+.gsc-search-button-v2 {
+  background: #4285f4 !important;
+  border: 2px solid #4285f4 !important;
+  border-radius: 0 10px 10px 0 !important;
+  padding: 10px 20px !important;
+  height: 44px !important;
+  cursor: pointer !important;
+  transition: background 0.2s !important;
+}
+.gsc-search-button-v2:hover {
+  background: #3367d6 !important;
+  border-color: #3367d6 !important;
+}
+.gsc-search-button-v2 svg {
+  fill: #fff !important;
+}
+.gs-result .gs-title,
+.gs-result .gs-title b {
+  color: #4285f4 !important;
+}
+.gsc-result-info {
+  color: #888 !important;
+  font-size: 13px !important;
+  padding-left: 0 !important;
+}
+.gsc-above-wrapper-area {
+  border-bottom: 1px solid #eee !important;
+  padding-bottom: 8px !important;
+  margin-bottom: 8px !important;
+}
+</style>
+
+<script>
+(function () {
+  function loadGCSE() {
+    var cx = '017637555849097978177:zjwzli1safz';
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://cse.google.com/cse.js?cx=' + cx;
+    document.head.appendChild(script);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGCSE);
+  } else {
+    loadGCSE();
+  }
+})();
+</script>
