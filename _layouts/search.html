@@ -1,4 +1,4 @@
-﻿---
+---
 layout: base
 ---
 
@@ -15,6 +15,7 @@ layout: base
 </article>
 
 <style>
+/* ── Wrapper ── */
 #search-wrapper {
   margin: 1.5rem 0 2rem;
 }
@@ -22,34 +23,58 @@ layout: base
   padding: 0 !important;
   border: none !important;
   background: transparent !important;
+  font-family: inherit !important;
 }
+
+/* ── Table cell reset: 세로 정렬 통일 ── */
+.gsc-search-box td {
+  padding: 0 !important;
+  vertical-align: middle !important;
+  border: none !important;
+}
+
+/* ── Input box ── */
 .gsc-input-box {
-  border: 2px solid #dde1e7 !important;
+  box-sizing: border-box !important;
+  height: 46px !important;
+  border: 2px solid #d0d5dd !important;
   border-right: none !important;
-  border-radius: 10px 0 0 10px !important;
-  padding: 2px 8px !important;
+  border-radius: 8px 0 0 8px !important;
+  padding: 0 12px !important;
   background: #fff !important;
-  transition: border-color 0.2s, box-shadow 0.2s !important;
-  height: 44px !important;
+  transition: border-color .2s, box-shadow .2s !important;
 }
 .gsc-input-box:focus-within {
   border-color: #4285f4 !important;
-  box-shadow: 0 0 0 3px rgba(66,133,244,0.12) !important;
+  box-shadow: 0 0 0 3px rgba(66,133,244,.15) !important;
 }
 input.gsc-input {
+  height: 100% !important;
   font-size: 15px !important;
-  padding: 6px 4px !important;
+  font-family: inherit !important;
   color: #333 !important;
   background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
 }
+
+/* ── Search button ── */
 .gsc-search-button-v2 {
+  box-sizing: border-box !important;
+  height: 46px !important;
   background: #4285f4 !important;
   border: 2px solid #4285f4 !important;
-  border-radius: 0 10px 10px 0 !important;
-  padding: 10px 20px !important;
-  height: 44px !important;
+  border-radius: 0 8px 8px 0 !important;
+  padding: 0 22px !important;
   cursor: pointer !important;
-  transition: background 0.2s !important;
+  transition: background .2s, border-color .2s !important;
+  vertical-align: middle !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 .gsc-search-button-v2:hover {
   background: #3367d6 !important;
@@ -57,7 +82,12 @@ input.gsc-input {
 }
 .gsc-search-button-v2 svg {
   fill: #fff !important;
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
 }
+
+/* ── Results ── */
 .gs-result .gs-title,
 .gs-result .gs-title b {
   color: #4285f4 !important;
